@@ -1,0 +1,16 @@
+.DS_Store
+*.swp
+target/*
+lib*
+*.orig
+*jar
+.idea
+.lein-failures
+dc-sdk.log
+.classpath
+.lein-deps-sum
+.lein-plugins/
+.project
+.lein-env
+.nrepl-port
+.lein-repl-history
