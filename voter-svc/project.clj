@@ -15,7 +15,9 @@
                  [org.clojure/clojure "1.7.0"]
                  [org.clojure/tools.logging "0.3.1"]
                  [ring/ring-json "0.3.1"]
-                 [ring-middleware-format "0.5.0"]]
+                 [ring-middleware-format "0.5.0"]
+                 [hiccup "1.0.5"]
+                 [com.taoensso/faraday "1.7.1" :exclusions [org.clojure/clojure commons-logging log4j joda-time org.clojure/tools.reader org.clojure/data.json]]]
 
   :exclusions [commons-logging
                log4j
@@ -45,7 +47,20 @@
         :service-url "http://localhost:%s"
         :shutdown-timeout-millis "5000"
         :start-timeout-seconds "120"
-        :threads "254"}
+        :threads "254"
+        :dynamo-endpoint "dynamodb.eu-west-1.amazonaws.com"
+        
+        ; things to configure...
+        :admin-key "3b47d204-f220-4bc9-a1d8-2d7ce05e76f9"
+        :hacks-table "hackvoter-hacks"
+        :hack-votes-table "hackvoter-votes"
+        :currency "pounds"
+        :allocation 5
+        :max-spend 3
+        :readalloc-hack 5
+        :writealloc-hack 3
+        :readalloc-vote 5
+        :writealloc-vote 5 }
   
   :lein-release {:deploy-via :shell
                  :shell ["lein" "do" "clean," "uberjar," "pom," "rpm"]}

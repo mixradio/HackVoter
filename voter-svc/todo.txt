@@ -1,0 +1,32 @@
+Hack has two types of id - the public guid and the editor guid
+
+Hacks-table :publicid :editorid :title :description :creator :imgurl :lastupdate 
+Hack-votes-table :publicid :userid
+
+GET /users/:userid/ - get list of hacks voted for PLUS number of votes left
+
+
+
+POST "/hacks" creates a new hack to edit - creates the IDs and redirects to /hacks/:editorid
+OR? GET "/hacks/new"
+
+GET "/" gets a list of hacks - either json or HTML representation
+
+GET "/hacks/:id" shows a hack to edit by EDITOR ID - HTML representation - security is based on only the creator knowing the id
+
+POST "/hacks/:id/votes" adds votes for a hack by PUBLIC ID
+
+GET "/admin/hacks" - HTML list of all hacks allowing edit link or delete - requires admin key (digest-auth?)
+DELETE "/admin/hacks/:id" - delete hack " by EDITOR ID
+
+
+
+(store-hack "7d10aeaa-7454-4487-8f98-2ada1b2e9bc1" "4a36ea57-a53d-46c9-bf91-2ae7ee0ea1cc" "hack 1" "describing hack 1" "SteveR" "http://google.com")
+
+(store-hack "7d10aeaa-7454-4487-8f98-2ada1b2e9bc2" "4a36ea57-a53d-46c9-bf91-2ae7ee0ea1cd" "hack 2" "describing hack 2" "SteveR" "http://google.com")
+
+(store-vote "7d10aeaa-user1" "4a36ea57-a53d-46c9-bf91-2ae7ee0ea1cd" 3)
+(store-vote "7d10aeaa-user1" "4a36ea57-a53d-46c9-bf91-2ae7ee0ea1cc" 1)
+
+(store-vote "7d10aeaa-user2" "4a36ea57-a53d-46c9-bf91-2ae7ee0ea1cd" 1)
+(store-vote "7d10aeaa-user2" "4a36ea57-a53d-46c9-bf91-2ae7ee0ea1cc" 4)
