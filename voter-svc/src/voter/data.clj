@@ -42,6 +42,11 @@
   	 {:range-keydef [:userid :s]
   	 	:throughput {:read (env :readalloc-vote) :write (env :writealloc-vote)} :block? true }))
 
+(defn list-hacks []
+	(if (table-exists? hack-table)
+		(far/scan client-opts hack-table)
+	[]))
+
 (defn store-hack [editorid publicid title description creator imgurl]
 	(ensure-hacks-table)
 	(prn (str "store-hack editorid=" editorid " publicid=" publicid " title=" title " description=" description " creator=" creator " imgurl=" imgurl))
@@ -73,14 +78,16 @@
 	(query-table votes-table {:publicid [:eq publicid]}))
 
 (defn get-votes-by-userid [userid]
-	(filter (fn[x] (== 0 (compare userid (:userid x)))) (far/scan client-opts votes-table)))
+	(filter (fn[x] (and (== 0 (compare userid (:userid x))) (> (:votes x) 0))) (far/scan client-opts votes-table)))
+
+(defn get-votes-and-hacks-by-userid [userid]
+	(let [raw-votes (get-votes-by-userid userid)
+				publicids (map #(:publicid %) raw-votes)
+				all-hacks (list-hacks)
+				user-hacks (filter (fn[x] (> (.indexOf publicids (x :publicid)) -1)) all-hacks)]
+		(map (fn [hack] (assoc hack :votes (:votes (first (filter (fn[x] (== (compare (str (:publicid hack)) (str (:publicid x))) 0)) raw-votes))))) user-hacks)))
 
 (defn get-config-items []
 	{	:currency (env :currency)
 		:allocation (env :allocation)
 		:maxspend (env :max-spend) })
-
-(defn list-hacks []
-	(if (table-exists? hack-table)
-		(far/scan client-opts hack-table)
-	[]))
