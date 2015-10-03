@@ -1,35 +1,31 @@
+GET "/" gets a list of hacks - either json or HTML representation
+GET "/admin/hacks" - HTML list of all hacks allowing edit link or delete - requires admin key (digest-auth?)
+  DATA:
+    - non-admin view: remove editorid
+  HTML:
+    - admin view: edit link, delete button
+    - normal view: voting
+    - set cookie for user id
 
 GET /users/:userid/ - get list of hacks voted for PLUS number of votes left
 
-POST "/hacks" creates a new hack to edit - creates the IDs and redirects to /hacks/:editorid
-OR? GET "/hacks/new"
+POST "/hacks/:id/votes" adds votes for a hack by PUBLIC ID; returns json of sum-all-votes
 
-GET "/" gets a list of hacks - either json or HTML representation
+GET "/admin/hacks/delete/:id" - delete hack by EDITOR ID, then redirect back to "/admin/hacks"
 
+GET "/hacks/new" creates a new hack to edit - creates the IDs and redirects to /hacks/:editorid
 GET "/hacks/:id" shows a hack to edit by EDITOR ID - HTML representation - security is based on only the creator knowing the id
 
-POST "/hacks/:id/votes" adds votes for a hack by PUBLIC ID
 
-GET "/admin/hacks" - HTML list of all hacks allowing edit link or delete - requires admin key (digest-auth?)
-DELETE "/admin/hacks/:id" - delete hack " by EDITOR ID
-
-
-
-
+-------------------------------------------------------------------------------------
 Hack has two types of id - the public guid and the editor guid
 
+(store-hack "7d10aeaa-7454-4487-8f98-2ada1b2e9bc1" "4a36ea57-a53d-46c9-bf91-2ae7ee0ea1cc" "hack 1" "describing hack 1 in lots of detail that will come across over several lines and overflow over several lines!" "SteveR" "https://encrypted-tbn2.gstatic.com/images?q=tbn:ANd9GcTOV7HTMhllyo8jd5_9t3oJH2s1dakJPwqoWDkCpkHgG7vaylWGQA")
 
-(store-hack "7d10aeaa-7454-4487-8f98-2ada1b2e9bc1" "4a36ea57-a53d-46c9-bf91-2ae7ee0ea1cc" "hack 1" "describing hack 1" "SteveR" "http://google.com")
-
-(store-hack "7d10aeaa-7454-4487-8f98-2ada1b2e9bc2" "4a36ea57-a53d-46c9-bf91-2ae7ee0ea1cd" "hack 2" "describing hack 2" "SteveR" "http://google.com")
+(store-hack "7d10aeaa-7454-4487-8f98-2ada1b2e9bc2" "4a36ea57-a53d-46c9-bf91-2ae7ee0ea1cd" "hack 2" "describing hack 2 <script>alert('hack);</script>" "SteveR" "https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcRA9ZGTMAoJvPX4rum_ypHkx8-jtWy4iLPdRJLlbZAVtDeGwYun")
 
 (store-vote "7d10aeaa-user1" "4a36ea57-a53d-46c9-bf91-2ae7ee0ea1cd" 3)
 (store-vote "7d10aeaa-user1" "4a36ea57-a53d-46c9-bf91-2ae7ee0ea1cc" 1)
 
 (store-vote "7d10aeaa-user2" "4a36ea57-a53d-46c9-bf91-2ae7ee0ea1cd" 1)
 (store-vote "7d10aeaa-user2" "4a36ea57-a53d-46c9-bf91-2ae7ee0ea1cc" 4)
-
-(list-hacks)
-
-(get-votes-by-userid "7d10aeaa-user2")
-

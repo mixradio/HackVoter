@@ -42,10 +42,17 @@
   	 {:range-keydef [:userid :s]
   	 	:throughput {:read (env :readalloc-vote) :write (env :writealloc-vote)} :block? true }))
 
-(defn list-hacks []
-	(if (table-exists? hack-table)
-		(far/scan client-opts hack-table)
-	[]))
+(defn- get-votes-by-userid [userid]
+	(filter (fn[x] (and (== 0 (compare userid (:userid x))) (> (:votes x) 0))) (far/scan client-opts votes-table)))
+
+(defn sum-all-votes []
+	(let [votes (far/scan client-opts votes-table)]
+		(apply merge-with + (map (fn[vote] (array-map (keyword (:publicid vote)) (:votes vote))) votes))))
+
+(defn list-hacks [alloweditorid]
+	(let [hacks (far/scan client-opts hack-table)
+				votes (sum-all-votes)]
+		(sort-by :votes > (map (fn [hack] (assoc hack :votes ((keyword (:publicid hack)) votes))) hacks))))
 
 (defn store-hack [editorid publicid title description creator imgurl]
 	(ensure-hacks-table)
@@ -77,15 +84,10 @@
 (defn get-votes-by-publicid [publicid]
 	(query-table votes-table {:publicid [:eq publicid]}))
 
-(defn get-votes-by-userid [userid]
-	(filter (fn[x] (and (== 0 (compare userid (:userid x))) (> (:votes x) 0))) (far/scan client-opts votes-table)))
-
-(defn get-votes-and-hacks-by-userid [userid]
+(defn get-hacks-with-votes-by-userid [userid]
 	(let [raw-votes (get-votes-by-userid userid)
-				publicids (map #(:publicid %) raw-votes)
-				all-hacks (list-hacks)
-				user-hacks (filter (fn[x] (> (.indexOf publicids (x :publicid)) -1)) all-hacks)]
-		(map (fn [hack] (assoc hack :votes (:votes (first (filter (fn[x] (== (compare (str (:publicid hack)) (str (:publicid x))) 0)) raw-votes))))) user-hacks)))
+				all-hacks (list-hacks false)]
+		(map (fn [hack] (assoc hack :user-votes (:votes (first (filter (fn[x] (== (compare (str (:publicid hack)) (str (:publicid x))) 0)) raw-votes))))) all-hacks)))
 
 (defn get-config-items []
 	{	:currency (env :currency)

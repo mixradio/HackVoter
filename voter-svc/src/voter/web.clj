@@ -16,7 +16,8 @@
             [ring.middleware
              [format-params :refer [wrap-json-kw-params]]
              [json :refer [wrap-json-response]]
-             [params :refer [wrap-params]]]))
+             [params :refer [wrap-params]]]
+            [ring.util.response :refer [resource-response]]))
 
 (def version
   (setup/version "voter"))
@@ -35,12 +36,32 @@
 (defn- wants-json [headers]
   (> (.indexOf (get headers "accept") "application/json") -1))
 
+(defn- get-hack-list [headers params adminview]
+    (let [isjson (wants-json headers)
+          config (data/get-config-items)
+          userid "7d10aeaa-user1"
+          hacks (if adminview (data/list-hacks true) (data/get-hacks-with-votes-by-userid userid))
+          content-type (if isjson "application/json" "text/html")
+          body (if isjson {:config config :items hacks} (html/format-hacks hacks config adminview (not adminview)))]
+          (prn (str "get-hack-list admin=" adminview))
+      {:headers {"content-type" content-type}
+       :status 200
+       :body body}))
+
 (defroutes routes
   (GET "/healthcheck"
        [] (healthcheck))
 
   (GET "/"
-        [] "gets a list of hacks - either json or HTML representation")
+    {:keys [headers params] :as request}
+    (get-hack-list headers params false))
+
+  (GET "/admin/hacks"
+    {:keys [headers params] :as request}
+    (get-hack-list headers params true))
+
+  (DELETE "/admin/hacks/:editorid"
+        [editorid] (str "delete hack " editorid))
 
   (GET "/hacks/new"
         [] (str "creates a new hack to edit - creates the editor ID and redirects to /hacks/:editorid"))
@@ -51,18 +72,13 @@
   (POST "/hacks/:publicid/votes"
         [publicid] (str "adds votes for a hack " publicid))
 
-  (GET "/admin/hacks"
-    {:keys [headers params] :as request}
-    (let [isjson (wants-json headers)
-          data {:config (data/get-config-items) :items (data/list-hacks)}
-          content-type (if isjson "application/json" "text/html")
-          body (if isjson data (html/format-hacks data true))]
-      {:headers {"content-type" content-type}
-       :status 200
-       :body body}))
+  (GET "/error" []
+       (html/get-error))
 
-  (DELETE "/admin/hacks/:editorid"
-        [editorid] (str "delete hack " editorid))
+  (GET "/favicon.ico" []
+       (resource-response "favicon.ico" ))
+
+  (route/resources "/assets")
   
   (route/not-found (error-response "Resource not found" 404)))
 

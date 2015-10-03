@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Hack Voter</title>
+  <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
+  <link href='//fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700' rel='stylesheet' type='text/css'>
+  <link rel="stylesheet" href="/assets/css/reset.css">
+  <link rel="stylesheet" href="/assets/css/styles.css">
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+</head>
+<body>
+  <div class="container-outer">
+    <div class="container-inner">
+      <div class="container-logo">
+        <a href="/"><img class="logo" src="/assets/img/logo.svg" alt="Hack Voter"/></a>
+      </div>
+      <div class="blurb">{TITLE}</div>
+      <div class="blurb">
+{CONTENT}
+      </div>
+    </div>
+  </div>
+  <script type="text/javascript">
+  function confirmdelete(title, deleteuri) {
+    if(confirm('Are you sure you want to delete "' + title + '"?')) {
+      window.location=deleteuri;
+    }
+  }
+  </script>
+</body>
+</html>
