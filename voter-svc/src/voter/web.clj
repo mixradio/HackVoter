@@ -36,15 +36,22 @@
 (defn- wants-json [headers]
   (> (.indexOf (get headers "accept") "application/json") -1))
 
+(defn- get-userid [headers]
+  (let [prefix "userid="
+        cookie (get headers "cookie")]
+    (if (and (not (nil? cookie)) (.startsWith cookie prefix)) (subs cookie (count prefix)) (str (java.util.UUID/randomUUID)))))
+
 (defn- get-hack-list [headers params adminview]
     (let [isjson (wants-json headers)
           config (data/get-config-items)
-          userid "7d10aeaa-user1"
-          hacks (if adminview (data/list-hacks true) (data/get-hacks-with-votes-by-userid userid))
+          userid (get-userid headers)
+          hacks (data/list-hacks adminview)
           content-type (if isjson "application/json" "text/html")
-          body (if isjson {:config config :items hacks} (html/format-hacks hacks config adminview (not adminview)))]
-          (prn (str "get-hack-list admin=" adminview))
-      {:headers {"content-type" content-type}
+          body (if isjson {:config config :items hacks} (html/format-hacks hacks config adminview))]
+          (prn (str "get-hack-list adminview=" adminview " userid=" userid))
+      {:headers (if adminview
+                  {"content-type" content-type}
+                  {"content-type" content-type, "set-cookie" (str "userid=" userid)})
        :status 200
        :body body}))
 
@@ -71,6 +78,13 @@
 
   (POST "/hacks/:publicid/votes"
         [publicid] (str "adds votes for a hack " publicid))
+
+  (GET "/votes"
+    {:keys [headers params] :as request}
+    (let [votes (data/get-user-votes-json (get-userid headers))]
+      {:headers {"content-type" "application/json"}
+       :status 200
+       :body votes}))
 
   (GET "/error" []
        (html/get-error))

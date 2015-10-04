@@ -24,40 +24,52 @@
 (defn- check-zero [value]
 	(if (nil? value) 0 value))
 
-(defn- format-hacklist [hacks config adminview allowvoting]
-	(prn (str hacks))
-	(try
-		(when (> (count hacks) 0)
-			(hiccup/html	[:div  {:class "section"}
-											[:div
-												(map (fn [hack]
-																	(hiccup/html
-																		[:div {:class "box" :id (:publicid hack)}
-																			[:div {:class "hack"} [:a {:href (:imgurl hack)} [:img {:src (:imgurl hack)}]]
-																				[:div {:class "vote"} (str (check-zero (:votes hack)) " vote(s)")]
-																				(when allowvoting (str "votebtns " (:user-votes hack)))]
-																			[:div
-																				[:h1 (util/escape-html (:title hack))]
-																				(when adminview
-																					[:div {:class "editlink"}
-																						(str (get-inline-link (str "/hacks/" (:editorid hack)) "edit")
-																								  " | "
-																								 (get-inline-link (str "javascript:confirmdelete('" (util/escape-html (:title hack)) "','/admin/hacks/delete/" (:editorid hack) "');") "delete"))])
-																				[:h3 (str "by " (util/escape-html (:creator hack)))]
-																				[:span (util/escape-html (:description hack))]]])) hacks)]]))
-		(catch Exception e (error (.printStackTrace e)))))
+(defn- format-hacklist [hacks config adminview]
+	(let [allowvoting (and (:allowvoting config) (not adminview))
+				showvotes (or adminview (:showvotes config))
+				winning-vote (:votes (first hacks))]
+		(try
+			(when (> (count hacks) 0)
+				(hiccup/html	[:div  {:class "section"}
+												[:div
+													(when adminview [:p [:select
+																								[:option "submission"]
+																								[:option "votingallowed"]
+																								[:option "completed"]]])
+													(map (fn [hack]
+																		(hiccup/html
+																			[:div {:class (str "box" (when (and showvotes (== (:votes hack) winning-vote)) " winner") ) :id (:publicid hack)}
+																				[:div {:class "hack"} [:a {:href (:imgurl hack)} [:img {:src (:imgurl hack)}]]
+																					(when showvotes [:div {:class "vote"} (str (check-zero (:votes hack)) " vote(s)")])
+																					(when allowvoting [:div {:class "uservote"} "votebtns"])]
+																				[:div
+																					[:h1 (util/escape-html (:title hack))]
+																					(when adminview
+																						[:div {:class "editlink"}
+																							(str (get-inline-link (str "/hacks/" (:editorid hack)) "edit")
+																									  " | "
+																									 (get-inline-link (str "javascript:confirmdelete('" (util/escape-html (:title hack)) "','/admin/hacks/delete/" (:editorid hack) "');") "delete"))])
+																					[:h3 (str "by " (util/escape-html (:creator hack)))]
+																					[:span (util/escape-html (:description hack))]]])) hacks)]]))
+			(catch Exception e (error (.printStackTrace e))))))
 
-(defn- format-config [config]
+(defn- format-config [config adminview]
 	(hiccup/html [:script {:type "text/javascript"} 
 		(str "var currency='" (util/escape-html (:currency config)) "';"
 				 "var allocation=parseInt('" (util/escape-html (:allocation config)) "');"
-				 "var maxspend=parseInt('" (util/escape-html (:maxspend config)) "');")]))
+				 "var maxspend=parseInt('" (util/escape-html (:maxspend config)) "');"
+				 "var allowvoting=" (and (:allowvoting config) (not adminview)) ";"
+				 "var showvotes=" (or (:showvotes config) adminview) ";")]))
 
-(defn format-hacks [hacks config adminview allowvoting]
-	(let [formatted-hacks (format-hacklist hacks config adminview allowvoting)
-				formatted-config (format-config config)]
+(defn format-hacks [hacks config adminview]
+	(let [formatted-hacks (format-hacklist hacks config adminview)
+				formatted-config (format-config config adminview)]
 ;		(str (:config data) (:items data)))
-		(get-page (str "Hack Voter" (when adminview " Admin")) (str formatted-hacks formatted-config))))
+		(get-page (str "Hack Voter"
+										(when adminview " Admin")
+										(when (:allowvoting config) " - voting is underway!")
+										(when (:showvotes config) " - voting is over!"))
+							(str formatted-hacks formatted-config))))
 
 (defn get-error []
 	(get-page "Sorry!"

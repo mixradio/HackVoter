@@ -118,6 +118,10 @@ input {
   border-radius: 6px;
 }
 
+.winner {
+  background-color: #2c2e4a;
+}
+
 .section {
   margin-bottom: 30px;
 }

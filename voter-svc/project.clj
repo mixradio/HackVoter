@@ -57,6 +57,7 @@
         :currency "pounds"
         :allocation 5
         :max-spend 3
+        :voting-stage "votingallowed" ; one of submission | votingallowed | completed 
         :readalloc-hack 5
         :writealloc-hack 3
         :readalloc-vote 5

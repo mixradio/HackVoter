@@ -23,6 +23,18 @@
     </div>
   </div>
   <script type="text/javascript">
+  if(allowvoting) {
+    $.ajax({ url: "/votes"}).done(function(data) {
+      for(var i=0;i<data.length;i++) {
+        var id = data[i].id;
+        var votes = data[i].uservotes;
+        var votediv = $('#' + id).find(".uservote");
+        votediv.html(votes);
+        console.log(id + ' ' + votes);
+      }
+    });
+  }
+
   function confirmdelete(title, deleteuri) {
     if(confirm('Are you sure you want to delete "' + title + '"?')) {
       window.location=deleteuri;
