@@ -42,8 +42,13 @@
   	 {:range-keydef [:userid :s]
   	 	:throughput {:read (env :readalloc-vote) :write (env :writealloc-vote)} :block? true }))
 
-(defn- get-user-votes [userid]
-	(filter (fn[x] (and (== 0 (compare userid (:userid x))) (> (:votes x) 0))) (far/scan client-opts votes-table)))
+(defn get-user-votes [userid]
+	(let [allhacks (far/scan client-opts hack-table)
+				uservotes (filter (fn[x] (and (== 0 (compare userid (:userid x))) (> (:votes x) 0))) (far/scan client-opts votes-table))]
+		(map (fn[hack] 
+			(let [id (:publicid hack)
+						vote (:votes (first (filter (fn[x] (== 0 (compare id (:publicid x)))) uservotes)))]
+				{:id id :uservotes (if (nil? vote) 0 vote)})) allhacks)))
 
 (defn get-config-items []
 	(let [stage (keyword (env :voting-stage))]
@@ -53,13 +58,6 @@
 			:votingstage stage
 			:allowvoting (== (compare :votingallowed stage) 0)
 			:showvotes (== (compare :completed stage) 0) }))
-
-(defn get-user-votes-json [userid]
-	(let [config (get-config-items)
-				allowvoting (:allowvoting config)]
-		(if allowvoting
-			(map (fn[vote] (array-map :id (:publicid vote) :uservotes (:votes vote))) (get-user-votes userid))
-			[])))
 	
 (defn sum-all-votes []
 	(let [votes (far/scan client-opts votes-table)]
@@ -73,11 +71,6 @@
 		(if showvotes
 			(map (fn[x] {:id (name (key x)) :votes (val x)}) (sum-all-votes))
 			[])))
-
-;(defn get-all-votes-json [userid]
-;	(let [user-votes (get-user-votes-json userid)
-;				all-votes (sum-all-votes-json)]
-;		(map (fn[vote] (assoc vote :uservotes (:uservotes (first (filter (fn[x] (== 0 (compare (:id vote) (:id x)))) user-votes))))) all-votes)))
 
 (defn list-hacks [adminview]
 	(let [rawhacks (far/scan client-opts hack-table)
@@ -116,12 +109,3 @@
 
 (defn get-hack-by-editorid [editorid]
 	(first (filter (fn[x] (== 0 (compare editorid (:editorid x)))) (far/scan client-opts hack-table))))
-
-; primary access by publicid
-;(defn get-votes-by-publicid [publicid]
-;	(query-table votes-table {:publicid [:eq publicid]}))
-
-;(defn get-hacks-with-votes-by-userid [userid]
-;	(let [raw-votes (get-user-votes userid)
-;				all-hacks (list-hacks false)]
-;		(map (fn [hack] (assoc hack :user-votes (:votes (first (filter (fn[x] (== (compare (str (:publicid hack)) (str (:publicid x))) 0)) raw-votes))))) all-hacks)))

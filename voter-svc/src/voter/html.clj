@@ -38,10 +38,11 @@
 																								[:option "completed"]]])
 													(map (fn [hack]
 																		(hiccup/html
+																			(when allowvoting [:div {:id "uservotefloater"} "floating vote thing"])
 																			[:div {:class (str "box" (when (and showvotes (== (:votes hack) winning-vote)) " winner") ) :id (:publicid hack)}
 																				[:div {:class "hack"} [:a {:href (:imgurl hack)} [:img {:src (:imgurl hack)}]]
 																					(when showvotes [:div {:class "vote"} (str (check-zero (:votes hack)) " vote(s)")])
-																					(when allowvoting [:div {:class "uservote"} "votebtns"])]
+																					(when allowvoting [:div {:class "voterow" } [:button {:class "button votebtn votebtnup" :onclick (str "vote('" (:publicid hack) "',1)")} "+"] [:button {:class "button votebtn votebtndown" :onclick (str "vote('" (:publicid hack) "',-1)")} "-"] [:div {:class "uservote"}]])]
 																				[:div
 																					[:h1 (util/escape-html (:title hack))]
 																					(when adminview

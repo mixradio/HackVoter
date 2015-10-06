@@ -81,7 +81,7 @@
 
   (GET "/votes"
     {:keys [headers params] :as request}
-    (let [votes (data/get-user-votes-json (get-userid headers))]
+    (let [votes (data/get-user-votes (get-userid headers))]
       {:headers {"content-type" "application/json"}
        :status 200
        :body votes}))

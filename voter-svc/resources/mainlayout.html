@@ -23,23 +23,61 @@
     </div>
   </div>
   <script type="text/javascript">
-  if(allowvoting) {
-    $.ajax({ url: "/votes"}).done(function(data) {
-      for(var i=0;i<data.length;i++) {
-        var id = data[i].id;
-        var votes = data[i].uservotes;
-        var votediv = $('#' + id).find(".uservote");
-        votediv.html(votes);
-        console.log(id + ' ' + votes);
-      }
-    });
-  }
+    if(allowvoting) {
+      var votes = null;
+      var votesused = 0;
 
-  function confirmdelete(title, deleteuri) {
-    if(confirm('Are you sure you want to delete "' + title + '"?')) {
-      window.location=deleteuri;
+      $.ajax({ url: "/votes"}).done(function(data) {
+        votes = data;
+        updatevotes();
+      });
+
+      function updatevotes() {
+        votesused = 0;
+        for(var i=0;i<votes.length;i++) {
+          var id = votes[i].id;
+          var votecount = votes[i].uservotes;
+          var votediv = $('#' + id).find(".uservote");
+          votesused += votecount;
+          votediv.html(votecount);
+        }
+        updatevotefloater(votesused);
+      }
+
+      function vote(id, vote) {
+        var newtotalvotes = votesused + vote;
+        if(newtotalvotes > allocation) {
+          return;
+        }
+        for (var i=0;i<votes.length;i++) {
+          var voteitem = votes[i];
+          if(id == voteitem.id) {
+            var newvote = voteitem.uservotes + vote;
+            if(newvote < 0) {
+              newvote = 0;
+            }
+            else if(newvote > maxspend) {
+              newvote = maxspend;
+            }
+            voteitem.uservotes = newvote;
+          }
+        }
+        updatevotes();
+      }
+
+      function updatevotefloater(votesused) {
+        if(allowvoting) {
+          $('#uservotefloater').html("You have used " + votesused + " out of your " + allocation + " " + currency);
+          $('#uservotefloater').show();
+        }
+      }
     }
-  }
+
+    function confirmdelete(title, deleteuri) {
+      if(confirm('Are you sure you want to delete "' + title + '"?')) {
+        window.location=deleteuri;
+      }
+    }
   </script>
 </body>
 </html>

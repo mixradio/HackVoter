@@ -54,7 +54,7 @@
         :admin-key "3b47d204-f220-4bc9-a1d8-2d7ce05e76f9"
         :hacks-table "hackvoter-hacks"
         :hack-votes-table "hackvoter-votes"
-        :currency "pounds"
+        :currency "hack pounds"
         :allocation 5
         :max-spend 3
         :voting-stage "votingallowed" ; one of submission | votingallowed | completed 

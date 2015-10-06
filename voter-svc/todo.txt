@@ -1,10 +1,9 @@
 GET "/" gets a list of hacks - either json or HTML representation
-  - voting buttons + current votes
-  - floating vote counter
-  - unless completed state, "add new" button at bottom
+- post votes
+- unless completed state, "add new" button at bottom
 
 GET "/admin/hacks" -  admin key auth (digest-auth?)
-  - enable voting - set stage
+  - enable voting - set voting stage
 
 POST "/hacks/:id/votes" adds votes for a hack by PUBLIC ID; returns json of sum-all-votes
 GET "/admin/hacks/delete/:id" - delete hack by EDITOR ID, then redirect back to "/admin/hacks"
