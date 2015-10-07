@@ -9,6 +9,7 @@
   <link rel="stylesheet" href="/assets/css/reset.css">
   <link rel="stylesheet" href="/assets/css/styles.css">
   <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/jquery-color/2.1.2/jquery.color.js"></script>
 </head>
 <body>
   <div class="container-outer">
@@ -26,8 +27,10 @@
     if(allowvoting) {
       var votes = null;
       var votesused = 0;
+      var flashing = false;
+      var floaterorigcolour = $.Color($('#uservotefloater'),'background-color');
 
-      $.ajax({ url: "/votes"}).done(function(data) {
+      $.get("/votes").done(function(data) {
         votes = data;
         updatevotes();
       });
@@ -47,6 +50,7 @@
       function vote(id, vote) {
         var newtotalvotes = votesused + vote;
         if(newtotalvotes > allocation) {
+          flashvotefloater();
           return;
         }
         for (var i=0;i<votes.length;i++) {
@@ -58,16 +62,35 @@
             }
             else if(newvote > maxspend) {
               newvote = maxspend;
+              flashvotefloater();
             }
-            voteitem.uservotes = newvote;
+
+            if(voteitem.uservotes != newvote) {
+              voteitem.uservotes = newvote;
+              $.post('/hacks/' + id + '/votes', {"votes": newvote},function(data) {
+                votes = data;
+                updatevotes();
+              });
+            }
+            break;
           }
         }
         updatevotes();
       }
 
+      function flashvotefloater() {
+        if(flashing)
+          return;
+        flashing = true;
+        var floater = $('#uservotefloater');
+        floater.animate({backgroundColor: '#ff2e80'}, 100).animate({backgroundColor: floaterorigcolour}, 200);
+        flashing = false;
+      }
+
       function updatevotefloater(votesused) {
         if(allowvoting) {
-          $('#uservotefloater').html("You have used " + votesused + " out of your " + allocation + " " + currency);
+          var summary = (votesused == allocation ? "all" : votesused) + " of your " + allocation + " " + currency;
+          $('#uservotefloater').html("You have spent " + summary + "<br/>You can use up to " + maxspend + " " + currency + " per hack");
           $('#uservotefloater').show();
         }
       }

@@ -36,9 +36,10 @@
 																								[:option "submission"]
 																								[:option "votingallowed"]
 																								[:option "completed"]]])
+													(when allowvoting [:div {:id "uservotefloater"} "floating vote thing"])
+													(when (not showvotes) [:div (get-inline-link "/hacks/new" "Add new hack")])
 													(map (fn [hack]
 																		(hiccup/html
-																			(when allowvoting [:div {:id "uservotefloater"} "floating vote thing"])
 																			[:div {:class (str "box" (when (and showvotes (== (:votes hack) winning-vote)) " winner") ) :id (:publicid hack)}
 																				[:div {:class "hack"} [:a {:href (:imgurl hack)} [:img {:src (:imgurl hack)}]]
 																					(when showvotes [:div {:class "vote"} (str (check-zero (:votes hack)) " vote(s)")])
@@ -66,10 +67,9 @@
 	(let [formatted-hacks (format-hacklist hacks config adminview)
 				formatted-config (format-config config adminview)]
 ;		(str (:config data) (:items data)))
-		(get-page (str "Hack Voter"
-										(when adminview " Admin")
-										(when (:allowvoting config) " - voting is underway!")
-										(when (:showvotes config) " - voting is over!"))
+		(get-page (str 	(when adminview "Admin")
+										(when (and (not adminview) (:allowvoting config)) "Voting is underway!")
+										(when (and (not adminview) (:showvotes config)) "Voting is over!"))
 							(str formatted-hacks formatted-config))))
 
 (defn get-error []

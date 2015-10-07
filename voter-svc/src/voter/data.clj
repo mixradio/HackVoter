@@ -96,16 +96,29 @@
 																 				:lastupdate (str (time/now))}))
 
 (defn store-vote [userid publicid votes]
-	(ensure-votes-table)
-	(prn (str "store-vote userid=" userid " publicid=" publicid))
-	(far/put-item client-opts votes-table {:userid userid
-																				 :publicid publicid
-																				 :votes votes
-																 				 :lastupdate (str (time/now))}))
+	; validate the allocation in case some smart-ass uses jquery to post bad votes :)
+	(let [config (get-config-items)
+				allowvoting (:allowvoting config)
+				allocation (:allocation config)
+				maxspend (:maxspend config)
+				existingvotes (get-user-votes userid)
+				uservotesincludingthis (+ votes (reduce + (map (fn[x] (if (== 0 (compare publicid (:id x))) 0 (:uservotes x))) existingvotes)))
+				votewithinbudget (and (<= votes maxspend) (<= uservotesincludingthis allocation))
+				oktostore (and allowvoting votewithinbudget)]
+		(prn (str "votewithinbudget=" votewithinbudget " uservotesincludingthis=" uservotesincludingthis))
+		(when oktostore
+			(prn (str "store-vote userid=" userid " publicid=" publicid " votes=" votes))
+			(ensure-votes-table)
+			(far/put-item client-opts votes-table {:userid userid
+																						 :publicid publicid
+																						 :votes votes
+																		 				 :lastupdate (str (time/now))}))
+		(when (not oktostore)
+			(prn "store-vote validation failed"))))
 
 ; primary access by publicid
 (defn get-hack-by-publicid [publicid]
-	(query-table hack-table {:publicid [:eq publicid]}))
+	(first (query-table hack-table {:publicid [:eq publicid]})))
 
 (defn get-hack-by-editorid [editorid]
 	(first (filter (fn[x] (== 0 (compare editorid (:editorid x)))) (far/scan client-opts hack-table))))

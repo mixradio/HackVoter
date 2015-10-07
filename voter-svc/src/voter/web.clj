@@ -64,11 +64,14 @@
     (get-hack-list headers params false))
 
   (GET "/admin/hacks"
+    ; ENSURE ADMIN AUTH
     {:keys [headers params] :as request}
     (get-hack-list headers params true))
-
-  (DELETE "/admin/hacks/:editorid"
-        [editorid] (str "delete hack " editorid))
+  
+  (GET "/admin/hacks/delete/:editorid" ; yep, it's not RESTful, but it's simple!
+    ; ENSURE ADMIN AUTH
+    ; DELETE VOTES AS WELL AS HACK
+    [editorid] (str "delete hack " editorid))
 
   (GET "/hacks/new"
         [] (str "creates a new hack to edit - creates the editor ID and redirects to /hacks/:editorid"))
@@ -77,7 +80,20 @@
         [editorid] (str "shows a hack to edit - HTML representation " editorid))
 
   (POST "/hacks/:publicid/votes"
-        [publicid] (str "adds votes for a hack " publicid))
+    {:keys [headers params] :as request}
+    (let [userid (get-userid headers)
+          id (get params :publicid)
+          strvotes (get params "votes")
+          votes (Integer. (re-find  #"\d+" strvotes))
+          hackexists (not (nil? (data/get-hack-by-publicid id)))
+          valid (and (number? votes) hackexists)]
+      (when valid (data/store-vote userid id votes))
+        (if valid
+         {:headers {"content-type" "application/json"}
+          :status 200
+          :body (data/get-user-votes userid)}
+         {:headers {"content-type" "application/json"}
+          :status 400})))
 
   (GET "/votes"
     {:keys [headers params] :as request}

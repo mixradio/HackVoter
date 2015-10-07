@@ -9,21 +9,14 @@ html {
 /* Mixins & variables */
 /* Small & basic styles that carry over to other sizes */
 .blurb a {
-  color: #ffffff;
-  font-size: 1.2em;
+  color: #aaaaaa;
+  margin-bottom: 1rem;
+  font-size: 1rem;
   cursor: pointer;
   display: inline-block;
   clear:both;
   font-family: sans-serif;
-}
-
-.editlink a {
-  padding-top: 3px;
-  color: #aaaaaa;
-}
-
-.editlink a {
-  padding-bottom: 3px;
+  text-decoration: underline;
 }
 
 .button:hover {
@@ -69,9 +62,7 @@ textarea { width:100%;
 .blurb p {
   font-family: sans-serif;
   font-size: 1.2rem;
-  line-height: 1.8rem;
-  /*margin: 0 auto;*/
-  margin-bottom: 2rem;
+  margin-bottom: 1rem;
   display: block;
  }
 .blurb img {
@@ -177,6 +168,7 @@ input {
   background-color: #2c2e4a;
   padding: 10px;
   border-radius: 3px;
+  line-height: 1.5rem;
   opacity: 0.85;
   display: none;
 }
