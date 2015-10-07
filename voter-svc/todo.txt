@@ -1,7 +1,4 @@
-GET "/admin/hacks"
-- admin key auth (digest-auth?)
-- set voting stage
-
+GET "/admin/hacks" - set voting stage
 GET "/admin/hacks/delete/:id" - delete hack by EDITOR ID, then redirect back to "/admin/hacks"
 GET "/hacks/new" creates a new hack to edit - creates the IDs and redirects to /hacks/:editorid
 GET "/hacks/:id" shows a hack to edit by EDITOR ID - HTML representation - security is based on only the creator knowing the id

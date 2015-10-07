@@ -50,7 +50,7 @@
 																						[:div {:class "editlink"}
 																							(str (get-inline-link (str "/hacks/" (:editorid hack)) "edit")
 																									  " | "
-																									 (get-inline-link (str "javascript:confirmdelete('" (util/escape-html (:title hack)) "','/admin/hacks/delete/" (:editorid hack) "');") "delete"))])
+																									 (get-inline-link (str "javascript:confirmdelete('" (util/escape-html (:title hack)) "','/admin/" (env :admin-key) "/delete/" (:editorid hack) "');") "delete"))])
 																					[:h3 (str "by " (util/escape-html (:creator hack)))]
 																					[:span (util/escape-html (:description hack))]]])) hacks)]]))
 			(catch Exception e (error (.printStackTrace e))))))
@@ -71,6 +71,11 @@
 										(when (and (not adminview) (:allowvoting config)) "Voting is underway!")
 										(when (and (not adminview) (:showvotes config)) "Voting is over!"))
 							(str formatted-hacks formatted-config))))
+
+(defn get-not-authorised []
+	(get-page "Oi!"
+						(str (hiccup/html [:p "The admin pages need authorisation"])
+								 (get-link "/" "Get outta here"))))
 
 (defn get-error []
 	(get-page "Sorry!"

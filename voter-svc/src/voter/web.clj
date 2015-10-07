@@ -41,6 +41,9 @@
         cookie (get headers "cookie")]
     (if (and (not (nil? cookie)) (.startsWith cookie prefix)) (subs cookie (count prefix)) (str (java.util.UUID/randomUUID)))))
 
+(defn- check-admin-auth [adminkey]
+  (== 0 (compare adminkey (env :admin-key))))
+
 (defn- get-hack-list [headers params adminview]
     (let [isjson (wants-json headers)
           config (data/get-config-items)
@@ -63,21 +66,26 @@
     {:keys [headers params] :as request}
     (get-hack-list headers params false))
 
-  (GET "/admin/hacks"
-    ; ENSURE ADMIN AUTH
+  (GET "/admin" [] (html/get-not-authorised))
+
+  (GET "/admin/:adminkey"
     {:keys [headers params] :as request}
-    (get-hack-list headers params true))
+    (if (check-admin-auth (:adminkey params))
+      (get-hack-list headers params true)
+      (html/get-not-authorised)))
   
-  (GET "/admin/hacks/delete/:editorid" ; yep, it's not RESTful, but it's simple!
-    ; ENSURE ADMIN AUTH
+  (GET "/admin/:adminkey/delete/:editorid" ; yep, it's not RESTful, but it's simple!
+    [adminkey editorid]
     ; DELETE VOTES AS WELL AS HACK
-    [editorid] (str "delete hack " editorid))
+    (if (check-admin-auth adminkey)
+      (str "delete hack " editorid)
+      (html/get-not-authorised)))
 
   (GET "/hacks/new"
         [] (str "creates a new hack to edit - creates the editor ID and redirects to /hacks/:editorid"))
 
   (GET "/hacks/:editorid"
-        [editorid] (str "shows a hack to edit - HTML representation " editorid))
+      [editorid] (str "shows a hack to edit - HTML representation " editorid))
 
   (POST "/hacks/:publicid/votes"
     {:keys [headers params] :as request}
