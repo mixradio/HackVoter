@@ -122,3 +122,24 @@
 
 (defn get-hack-by-editorid [editorid]
 	(first (filter (fn[x] (== 0 (compare editorid (:editorid x)))) (far/scan client-opts hack-table))))
+
+(defn- delete-vote [publicidtogo vote]
+	(let [publicid (:publicid vote)
+				userid (:userid vote)]
+		(prn (str "delete-vote " publicid " " userid))
+		(when (== 0 (compare publicidtogo publicid))
+			(far/delete-item client-opts votes-table {:publicid publicid :userid userid})))
+	publicidtogo)
+
+(defn delete-hack-and-votes [editorid]
+	(str "delete-hack-and-votes " editorid)
+	(let [hack (get-hack-by-editorid editorid)
+				publicid (:publicid hack)
+				votes (far/scan client-opts votes-table)
+				proceed (not (nil? hack))]
+		; delete votes first...
+		(prn proceed)
+		(when proceed
+			(doseq [v votes] (delete-vote publicid v))
+			(far/delete-item client-opts hack-table {:publicid publicid :editorid editorid}))
+		editorid))

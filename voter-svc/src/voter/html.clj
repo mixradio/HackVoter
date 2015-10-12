@@ -29,7 +29,7 @@
 				showvotes (or adminview (:showvotes config))
 				winning-vote (:votes (first hacks))]
 		(try
-			(when (> (count hacks) 0)
+			(str 
 				(hiccup/html	[:div  {:class "section"}
 												[:div
 													(when adminview [:p [:select
@@ -37,22 +37,27 @@
 																								[:option "votingallowed"]
 																								[:option "completed"]]])
 													(when allowvoting [:div {:id "uservotefloater"} "floating vote thing"])
-													(when (not showvotes) [:div (get-inline-link "/hacks/new" "Add new hack")])
-													(map (fn [hack]
-																		(hiccup/html
-																			[:div {:class (str "box" (when (and showvotes (== (:votes hack) winning-vote)) " winner") ) :id (:publicid hack)}
-																				[:div {:class "hack"} [:a {:href (:imgurl hack)} [:img {:src (:imgurl hack)}]]
-																					(when showvotes [:div {:class "vote"} (str (check-zero (:votes hack)) " vote(s)")])
-																					(when allowvoting [:div {:class "voterow" } [:button {:class "button votebtn votebtnup" :onclick (str "vote('" (:publicid hack) "',1)")} "+"] [:button {:class "button votebtn votebtndown" :onclick (str "vote('" (:publicid hack) "',-1)")} "-"] [:div {:class "uservote"}]])]
-																				[:div
-																					[:h1 (util/escape-html (:title hack))]
-																					(when adminview
-																						[:div {:class "editlink"}
-																							(str (get-inline-link (str "/hacks/" (:editorid hack)) "edit")
-																									  " | "
-																									 (get-inline-link (str "javascript:confirmdelete('" (util/escape-html (:title hack)) "','/admin/" (env :admin-key) "/delete/" (:editorid hack) "');") "delete"))])
-																					[:h3 (str "by " (util/escape-html (:creator hack)))]
-																					[:span (util/escape-html (:description hack))]]])) hacks)]]))
+													(when (not showvotes) [:div (get-inline-link "/hacks/new" "Add new hack")])]])
+				(if (> (count hacks) 0)
+					(hiccup/html	[:div  {:class "section"}
+													[:div
+														(map (fn [hack]
+																			(hiccup/html
+																				[:div {:class (str "box" (when (and showvotes (== (:votes hack) winning-vote)) " winner") ) :id (:publicid hack)}
+																					[:div {:class "hack"} [:a {:href (:imgurl hack)} [:img {:src (:imgurl hack)}]]
+																						(when showvotes [:div {:class "vote"} (str (check-zero (:votes hack)) " vote(s)")])
+																						(when allowvoting [:div {:class "voterow" } [:button {:class "button votebtn votebtnup" :onclick (str "vote('" (:publicid hack) "',1)")} "+"] [:button {:class "button votebtn votebtndown" :onclick (str "vote('" (:publicid hack) "',-1)")} "-"] [:div {:class "uservote"}]])]
+																					[:div
+																						[:h1 (util/escape-html (:title hack))]
+																						(when adminview
+																							[:div {:class "editlink"}
+																								(str (get-inline-link (str "/hacks/" (:editorid hack)) "edit")
+																										  " | "
+																										 (get-inline-link (str "javascript:confirmdelete('" (util/escape-html (:title hack)) "','/admin/" (env :admin-key) "/delete/" (:editorid hack) "');") "delete"))])
+																						[:h3 (str "by " (util/escape-html (:creator hack)))]
+																						[:span (util/escape-html (:description hack))]]])) hacks)]])
+					(hiccup/html [:div  {:class "section"}
+													[:div "No hacks yet!"]])))
 			(catch Exception e (error (.printStackTrace e))))))
 
 (defn- format-config [config adminview]

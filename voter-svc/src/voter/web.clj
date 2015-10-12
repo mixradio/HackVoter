@@ -13,6 +13,9 @@
              [setup :as setup]]
             [voter.data :as data]
             [voter.html :as html]
+            [clojure.string :as str]
+            [clj-time.core :as time]
+            [clj-time.format :refer [formatters unparse]]
             [ring.middleware
              [format-params :refer [wrap-json-kw-params]]
              [json :refer [wrap-json-response]]
@@ -37,9 +40,11 @@
   (> (.indexOf (get headers "accept") "application/json") -1))
 
 (defn- get-userid [headers]
-  (let [prefix "userid="
-        cookie (get headers "cookie")]
-    (if (and (not (nil? cookie)) (.startsWith cookie prefix)) (subs cookie (count prefix)) (str (java.util.UUID/randomUUID)))))
+  (let [cookie (get headers "cookie")
+        crumbs (when (not (nil? cookie)) (str/split cookie #"userid="))
+        userid (when (> (count crumbs) 0) (last crumbs))]
+    (prn (str "get-userid " cookie " -> " userid))
+    (if (not (nil? userid)) userid (str (java.util.UUID/randomUUID)))))
 
 (defn- check-admin-auth [adminkey]
   (== 0 (compare adminkey (env :admin-key))))
@@ -54,7 +59,7 @@
           (prn (str "get-hack-list adminview=" adminview " userid=" userid))
       {:headers (if adminview
                   {"content-type" content-type}
-                  {"content-type" content-type, "set-cookie" (str "userid=" userid)})
+                  {"content-type" content-type, "set-cookie" (str "userid=" userid ";expires=" (unparse (formatters :rfc822) (time/plus (time/now) (time/years 5))))})
        :status 200
        :body body}))
 
@@ -76,16 +81,17 @@
   
   (GET "/admin/:adminkey/delete/:editorid" ; yep, it's not RESTful, but it's simple!
     [adminkey editorid]
-    ; DELETE VOTES AS WELL AS HACK
+    (when (check-admin-auth adminkey) (data/delete-hack-and-votes editorid))
     (if (check-admin-auth adminkey)
-      (str "delete hack " editorid)
+      {:status 302 :headers {"location" (str "/admin/" adminkey)}}
       (html/get-not-authorised)))
 
   (GET "/hacks/new"
         [] (str "creates a new hack to edit - creates the editor ID and redirects to /hacks/:editorid"))
 
   (GET "/hacks/:editorid"
-      [editorid] (str "shows a hack to edit - HTML representation " editorid))
+      {:keys [headers params] :as request}
+      (str "shows a hack to edit - HTML representation " (get params :editorid)))
 
   (POST "/hacks/:publicid/votes"
     {:keys [headers params] :as request}
