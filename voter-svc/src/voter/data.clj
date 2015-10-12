@@ -84,16 +84,22 @@
 			(sort-by :votes > (map (fn [hack] (assoc hack :votes ((keyword (:publicid hack)) votes))) hacks))
 			hacks)))
 
-(defn store-hack [editorid publicid title description creator imgurl]
-	(ensure-hacks-table)
-	(prn (str "store-hack editorid=" editorid " publicid=" publicid " title=" title " description=" description " creator=" creator " imgurl=" imgurl))
-	(far/put-item client-opts hack-table {:publicid publicid
-																 				:editorid editorid
-																 				:title title
-																 				:description description
-																 				:creator creator
-																 				:imgurl imgurl
-																 				:lastupdate (str (time/now))}))
+(defn store-hack [hack]
+	(let [editorid (:editorid hack)
+				publicid (:publicid hack)
+				title (:title hack)
+				description (:description hack)
+				creator (:creator hack)
+				imgurl (:imgurl hack)]
+		(ensure-hacks-table)
+		(prn (str "store-hack editorid=" editorid " publicid=" publicid " title=" title " description=" description " creator=" creator " imgurl=" imgurl))
+		(far/put-item client-opts hack-table {:publicid publicid
+																	 				:editorid editorid
+																	 				:title title
+																	 				:description description
+																	 				:creator creator
+																	 				:imgurl imgurl
+																	 				:lastupdate (str (time/now))})))
 
 (defn store-vote [userid publicid votes]
 	; validate the allocation in case some smart-ass uses jquery to post bad votes :)

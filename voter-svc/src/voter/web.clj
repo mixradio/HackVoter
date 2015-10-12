@@ -91,7 +91,19 @@
 
   (GET "/hacks/:editorid"
       {:keys [headers params] :as request}
-      (str "shows a hack to edit - HTML representation " (get params :editorid)))
+      (let [hack (data/get-hack-by-editorid (get params :editorid))]
+        (html/get-edit-page hack)))
+
+  (POST "/hacks/:editorid"
+      {:keys [headers params] :as request}
+      (let [hack (data/get-hack-by-editorid (get params :editorid))
+            isnew (nil? (:publicid hack))
+            mergedhack (assoc (assoc (assoc hack :title (get params "title")) :description (get params "desc")) :creator (get params "creator"))
+            finalhack (if isnew (assoc mergedhack :publicid (str (java.util.UUID/randomUUID))) mergedhack)]
+        (prn hack)
+        (prn finalhack)
+        (data/store-hack finalhack)
+        (html/get-edit-page finalhack)))
 
   (POST "/hacks/:publicid/votes"
     {:keys [headers params] :as request}

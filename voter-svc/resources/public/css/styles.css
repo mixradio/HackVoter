@@ -221,6 +221,33 @@ input {
   height:100%;
 }
 
+form {
+  border: 1px #CC2266 solid;
+  background-color: #2c2e4a;
+  padding: 30px;
+  font-size: 24px;
+}
+
+form div {
+  display: block;
+  margin-bottom: 20px;
+}
+
+label {
+  margin-bottom: 20px;
+  float:left;
+  /*margin: 20px;*/
+}
+
+input[type='text'] {
+  font-size: 20px;
+  width: 100%;
+}
+
+input[type='submit'] {
+  font-size: 20px;
+}
+
 @media only screen and (min-width: 768px) {
   .box {
     padding: 20px;
