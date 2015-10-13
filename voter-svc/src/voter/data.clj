@@ -82,7 +82,7 @@
 		(prn (str "list-hacks allowvoting=" allowvoting " showvotes=" showvotes " adminview=" adminview))
 		(if (and showvotes (not (nil? votes)))
 			(sort-by :votes > (map (fn [hack] (assoc hack :votes ((keyword (:publicid hack)) votes))) hacks))
-			hacks)))
+			(sort-by #(:title %) hacks))))
 
 (defn store-hack [hack]
 	(let [editorid (:editorid hack)

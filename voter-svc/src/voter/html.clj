@@ -80,15 +80,16 @@
 (defn- value-or-string [value]
 	(if (not (nil? value)) value ""))
 
-(defn get-edit-page [hack]
+(defn get-edit-page [hack msg]
 	(let [isnew (nil? (:publicid hack))]
-		(get-page (if isnew "New Hack" "Edit Hack")
+		(get-page (if isnew "New Hack - bookmark this page to get back to it!" "Edit Hack")
 							(hiccup/html [:div  {:class "section"}
 															[:form {:action (str "/hacks/" (:editorid hack)) :method "post"}
 																[:div [:label {:for "title" :accesskey "t"} "<u>T</u>itle:"] [:input {:type "text" :name "title" :id "title" :value (value-or-string (:title hack))}]]
 																[:div [:label {:for "desc" :accesskey "d"} "<u>D</u>escription:"] [:input {:type "text" :name "desc" :id "desc" :value (value-or-string (:description hack))}]]
 																[:div [:label {:for "creator" :accesskey "c"} "<u>C</u>reator:"] [:input {:type "text" :name "creator" :id "creator" :value (value-or-string (:creator hack))}]]
 																[:input {:type "submit" :value "Save"}]
+																(when (not (nil? msg)) [:div {:class "message"} msg])
 															]]))))
 
 (defn get-not-authorised []

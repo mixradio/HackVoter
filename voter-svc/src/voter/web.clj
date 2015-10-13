@@ -25,7 +25,6 @@
 (def version
   (setup/version "voter"))
 
-
 (defn- healthcheck
   []
   (let [body {:name "voter"
@@ -36,6 +35,9 @@
      :status (if (:success body) 200 500)
      :body body}))
 
+(defn- new-uuid[]
+  (str (java.util.UUID/randomUUID)))
+
 (defn- wants-json [headers]
   (> (.indexOf (get headers "accept") "application/json") -1))
 
@@ -44,7 +46,7 @@
         crumbs (when (not (nil? cookie)) (str/split cookie #"userid="))
         userid (when (> (count crumbs) 0) (last crumbs))]
     (prn (str "get-userid " cookie " -> " userid))
-    (if (not (nil? userid)) userid (str (java.util.UUID/randomUUID)))))
+    (if (not (nil? userid)) userid (new-uuid))))
 
 (defn- check-admin-auth [adminkey]
   (== 0 (compare adminkey (env :admin-key))))
@@ -86,24 +88,32 @@
       {:status 302 :headers {"location" (str "/admin/" adminkey)}}
       (html/get-not-authorised)))
 
-  (GET "/hacks/new"
-        [] (str "creates a new hack to edit - creates the editor ID and redirects to /hacks/:editorid"))
+  (GET "/hacks/new" []
+    {:status 302 :headers {"location" (str "/hacks/" (new-uuid))}})
 
   (GET "/hacks/:editorid"
       {:keys [headers params] :as request}
-      (let [hack (data/get-hack-by-editorid (get params :editorid))]
-        (html/get-edit-page hack)))
+      (let [editorid (get params :editorid)
+            hack (data/get-hack-by-editorid editorid)
+            editablehack (if (nil? (:publicid hack)) {:editorid editorid} hack)]
+        (html/get-edit-page editablehack nil)))
 
   (POST "/hacks/:editorid"
       {:keys [headers params] :as request}
-      (let [hack (data/get-hack-by-editorid (get params :editorid))
+      (let [editorid (get params :editorid)
+            hack (data/get-hack-by-editorid editorid)
             isnew (nil? (:publicid hack))
-            mergedhack (assoc (assoc (assoc hack :title (get params "title")) :description (get params "desc")) :creator (get params "creator"))
-            finalhack (if isnew (assoc mergedhack :publicid (str (java.util.UUID/randomUUID))) mergedhack)]
-        (prn hack)
-        (prn finalhack)
-        (data/store-hack finalhack)
-        (html/get-edit-page finalhack)))
+            newtitle (get params "title")
+            newdesc (get params "desc")
+            newcreator (get params "creator")
+            valid (and (and (not (str/blank? newtitle)) (not (str/blank? newdesc))) (not (str/blank? newcreator)))
+            mergedhack (assoc (assoc (assoc hack :title newtitle) :description newdesc) :creator newcreator)
+            editorhack (assoc mergedhack :editorid editorid)
+            finalhack (if (and valid isnew) (assoc editorhack :publicid (new-uuid)) editorhack)]
+        (if valid
+          (do (data/store-hack finalhack)
+              (html/get-edit-page finalhack "Changes saved."))
+          (html/get-edit-page finalhack "Changed not saved due to missing fields."))))
 
   (POST "/hacks/:publicid/votes"
     {:keys [headers params] :as request}
