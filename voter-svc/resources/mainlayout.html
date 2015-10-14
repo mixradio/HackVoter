@@ -37,14 +37,31 @@
 
       function updatevotes() {
         votesused = 0;
+        // sum up votes used...
         for(var i=0;i<votes.length;i++) {
           var id = votes[i].id;
           var votecount = votes[i].uservotes;
-          var votediv = $('#' + id).find(".uservote");
           votesused += votecount;
-          votediv.html(votecount);
+          $('#' + id).find(".uservote").html(votecount);
+          var votedown = $('#' + id).find(".votebtndown");
+          if(votecount == 0)
+            votedown.prop('disabled', true);
+          else
+            votedown.prop('disabled', false);
         }
+
+        // update votes used...
         updatevotefloater(votesused);
+
+        // now enable / disable vote up buttons based on votes left:
+        for(var i=0;i<votes.length;i++) {
+          var id = votes[i].id;
+          var voteup = $('#' + id).find(".votebtnup");
+          if(votesused == allocation)
+            voteup.prop('disabled', true);
+          else
+            voteup.prop('disabled', false);
+        }
       }
 
       function vote(id, vote) {

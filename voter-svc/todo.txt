@@ -1,5 +1,4 @@
 "/admin/hacks" - set voting stage
-"/" gray out vote buttons if at max or 0
 
 -------------------------------------------------------------------------------------
 Hack has two types of id - the public guid and the editor guid

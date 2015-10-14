@@ -211,6 +211,11 @@ input {
   float:right;
 }
 
+.votebtn[disabled] {
+  background-color: #8f0039;
+  border: 1px solid #8f0039;
+}
+
 .uservote {
   display: inline-block;
   background: #2c2e4a;
