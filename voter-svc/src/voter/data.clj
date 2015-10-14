@@ -80,8 +80,9 @@
 				showvotes (or adminview (:showvotes config))
 				votes (sum-all-votes)]
 		(prn (str "list-hacks allowvoting=" allowvoting " showvotes=" showvotes " adminview=" adminview))
+		(prn votes)
 		(if (and showvotes (not (nil? votes)))
-			(sort-by :votes > (map (fn [hack] (assoc hack :votes ((keyword (:publicid hack)) votes))) hacks))
+			(sort-by :votes > (map (fn [hack] (let [numvotes ((keyword (:publicid hack)) votes)] (assoc hack :votes (if (nil? numvotes) 0 numvotes)))) hacks))
 			(sort-by #(:title %) hacks))))
 
 (defn store-hack [hack]

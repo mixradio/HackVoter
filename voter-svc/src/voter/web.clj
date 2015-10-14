@@ -106,14 +106,16 @@
             newtitle (get params "title")
             newdesc (get params "desc")
             newcreator (get params "creator")
-            valid (and (and (not (str/blank? newtitle)) (not (str/blank? newdesc))) (not (str/blank? newcreator)))
-            mergedhack (assoc (assoc (assoc hack :title newtitle) :description newdesc) :creator newcreator)
+            newimgurl (get params "imgurl")
+            valid (and (and (not (str/blank? newtitle)) (not (str/blank? newdesc))) (not (str/blank? newcreator)) (not (str/blank? newimgurl)))
+            mergedhack (assoc (assoc (assoc (assoc hack :title newtitle) :description newdesc) :creator newcreator) :imgurl newimgurl)
             editorhack (assoc mergedhack :editorid editorid)
             finalhack (if (and valid isnew) (assoc editorhack :publicid (new-uuid)) editorhack)]
+        (prn params)
         (if valid
           (do (data/store-hack finalhack)
               (html/get-edit-page finalhack "Changes saved."))
-          (html/get-edit-page finalhack "Changed not saved due to missing fields."))))
+          (html/get-edit-page finalhack "Changed not saved due to missing items - please enter all values including an image."))))
 
   (POST "/hacks/:publicid/votes"
     {:keys [headers params] :as request}

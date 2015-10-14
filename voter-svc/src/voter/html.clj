@@ -83,11 +83,16 @@
 (defn get-edit-page [hack msg]
 	(let [isnew (nil? (:publicid hack))]
 		(get-page (if isnew "New Hack - bookmark this page to get back to it!" "Edit Hack")
-							(hiccup/html [:div  {:class "section"}
+							(hiccup/html 	[:script {:type "text/javascript" :src "//api.filepicker.io/v2/filepicker.js"}]
+														[:div  {:class "section"}
+															[:p "Please supply all fields including an image."]
 															[:form {:action (str "/hacks/" (:editorid hack)) :method "post"}
 																[:div [:label {:for "title" :accesskey "t"} "<u>T</u>itle:"] [:input {:type "text" :name "title" :id "title" :value (value-or-string (:title hack))}]]
 																[:div [:label {:for "desc" :accesskey "d"} "<u>D</u>escription:"] [:input {:type "text" :name "desc" :id "desc" :value (value-or-string (:description hack))}]]
 																[:div [:label {:for "creator" :accesskey "c"} "<u>C</u>reator:"] [:input {:type "text" :name "creator" :id "creator" :value (value-or-string (:creator hack))}]]
+																[:div [:label  "Image:"] [:img {:id "editpreview" :src (:imgurl hack)}] (when (str/blank? (:imgurl hack)) [:p {:id "noimg"} "No image uploaded yet"])]
+																[:div [:input {:type "hidden" :name "imgurl" :id "imgurl" :value (:imgurl hack)}]
+																			[:input {:type "filepicker" :data-fp-apikey (env :filepickerio-key) :onchange "newimageuploaded(event.fpfile.url)"}]]
 																[:input {:type "submit" :value "Save"}]
 																(when (not (nil? msg)) [:div {:class "message"} msg])
 															]]))))
