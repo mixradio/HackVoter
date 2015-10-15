@@ -1,6 +1,6 @@
 (ns voter.web
   (:require [compojure
-             [core :refer [defroutes GET POST DELETE]]
+             [core :refer [defroutes GET POST PUT DELETE]]
              [route :as route]]
             [environ.core :refer [env]]
             [metrics.ring
@@ -80,8 +80,16 @@
     (if (check-admin-auth (:adminkey params))
       (get-hack-list headers params true)
       (html/get-not-authorised)))
-  
-  (GET "/admin/:adminkey/delete/:editorid" ; yep, it's not RESTful, but it's simple!
+
+  (PUT "/admin/:adminkey/stage/:stage" [adminkey stage]
+    (if (check-admin-auth adminkey)
+      (if (str/blank? stage)
+        {:status 400}
+        (do (data/update-voting-stage stage)
+          {:status 204}))
+      (html/get-not-authorised)))
+
+  (GET "/admin/:adminkey/delete/:editorid" ; yep, it's not RESTful, but it's simple and let's us redirect through the browser
     [adminkey editorid]
     (when (check-admin-auth adminkey) (data/delete-hack-and-votes editorid))
     (if (check-admin-auth adminkey)

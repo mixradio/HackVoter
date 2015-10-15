@@ -40,7 +40,7 @@ textarea { width:100%;
   position: absolute;
   top: 0;
   bottom: 0;
-  padding: 10%; }
+  padding: 10% 0; }
 
 .container-inner {
   display: table-cell;
@@ -55,9 +55,8 @@ textarea { width:100%;
 
 .blurb {
   width: 100%;
-  /*max-width: 600px;*/
   float: left;
-  text-align: left;
+  /*text-align: left;*/
   overflow: auto; }
 .blurb p {
   font-family: sans-serif;
@@ -68,9 +67,6 @@ textarea { width:100%;
 .blurb img {
   max-width: 100%;
  }
-
-.logo {
-  float: left; }
 
 /* Medium */
 @media only screen and (min-width: 768px) {
@@ -93,11 +89,12 @@ input {
   text-align: left;
   clear:both;
   background-color: #444;
-  overflow: auto;
   overflow-y: hidden;
   padding: 10px;
-  margin: 0 auto 20px auto;
+  margin: 0 0 20px 0;
   border-radius: 6px;
+  width: 96%;
+  margin: 2%;
 }
 
 .winner {
@@ -111,10 +108,9 @@ input {
 .box h1 {
   color: #ff2e80;
   text-transform: uppercase;
-  font-size: 28px;
+  font-size: 24px;
   font-family: sans-serif;
   font-weight: bolder;
-  white-space: nowrap;
 }
 
 .box h3 {
@@ -268,7 +264,24 @@ img#editpreview {
   color: #ff2e80;
 }
 
+.adminstage {
+  background-color: #2c2e4a;
+  border-radius: 4px;
+  padding-left: 6px;
+  width: 96%;
+  margin: 2%;
+}
+
+.adminstage span {
+  width: 150px;
+  display: inline-block;
+  padding: 6px 0px;
+}
+
 @media only screen and (min-width: 768px) {
+  .container-outer {
+    padding: 10%;
+  }
   .box {
     padding: 20px;
   }
@@ -277,9 +290,6 @@ img#editpreview {
   }
   .box h3 {
     font-size: 20px;
-  }
-  .section {
-    margin-bottom: 75px;
   }
   .hack {
     width: 160px;
@@ -291,6 +301,5 @@ img#editpreview {
 
 @media only screen and (min-width: 1025px) {
   .box {
-    margin: 0 0 20px 0;
   }
 }

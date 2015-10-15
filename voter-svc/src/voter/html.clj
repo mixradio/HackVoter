@@ -27,15 +27,24 @@
 (defn- format-hacklist [hacks config adminview]
 	(let [allowvoting (and (:allowvoting config) (not adminview))
 				showvotes (or adminview (:showvotes config))
+				stage (:votingstage config)
 				winning-vote (:votes (first hacks))]
 		(try
 			(str 
 				(hiccup/html	[:div  {:class "section"}
 												[:div
-													(when adminview [:p [:select
-																								[:option "submission"]
-																								[:option "votingallowed"]
-																								[:option "completed"]]])
+													(when adminview [:div {:class "adminstage"}
+																											[:div [:span "Deployed stage:"] (subs (str (:configuredvotingstage config)) 1)]
+																											[:div [:span "Active stage:"]
+																													[:select
+																														{:id "adminvotingstage" :onchange "stagechanged()"}
+																														[:option (when (== (compare :submission stage) 0) {:selected "true"}) "submission"]
+																														[:option (when (== (compare :votingallowed stage) 0) {:selected "true"}) "votingallowed"]
+																														[:option (when (== (compare :completed stage) 0) {:selected "true"}) "completed"]]]])
+													(when adminview [:script {:type "text/javascript"}
+														(str "function stagechanged() {"
+													  								"$.ajax({ url: '/admin/" (env :admin-key) "/stage/' + $('#adminvotingstage').val(),"
+													  								"type: 'PUT'});}")])
 													(when allowvoting [:div {:id "uservotefloater"} "floating vote thing"])
 													(when (not showvotes) [:div (get-inline-link "/hacks/new" "Add new hack")])]])
 				(if (> (count hacks) 0)

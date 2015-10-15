@@ -7,6 +7,9 @@
             [clj-time.core :as time]
  				  	[clojure.tools.logging :refer [warn error]]))
 
+(def votingstage (atom (keyword (env :voting-stage))))
+(def valid-stages #{:submission :votingallowed :completed})
+
 (defn- remove-empty-entries
   [map-entries]
   (into {} (remove #(empty? (str (second %))) map-entries)))
@@ -51,13 +54,21 @@
 				{:id id :uservotes (if (nil? vote) 0 vote)})) allhacks)))
 
 (defn get-config-items []
-	(let [stage (keyword (env :voting-stage))]
+	(let [stage @votingstage]
 		{	:currency (env :currency)
 			:allocation (env :allocation)
 			:maxspend (env :max-spend)
 			:votingstage stage
+			:configuredvotingstage (keyword (env :voting-stage))
 			:allowvoting (== (compare :votingallowed stage) 0)
 			:showvotes (== (compare :completed stage) 0) }))
+
+(defn update-voting-stage [newstage]
+	(let [keystage (keyword newstage)]
+		(if (contains? valid-stages keystage)
+			(do (reset! votingstage keystage)
+					true)
+			false)))
 	
 (defn sum-all-votes []
 	(let [votes (far/scan client-opts votes-table)]
