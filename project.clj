@@ -52,6 +52,7 @@
         
         ; things to configure...
         :admin-key "3b47d204-f220-4bc9-a1d8-2d7ce05e76f9"
+        :filepicker-key "get a key from https://www.filepicker.com/"
         :hacks-table "hackvoter-hacks"
         :hack-votes-table "hackvoter-votes"
         :currency "hack pounds"

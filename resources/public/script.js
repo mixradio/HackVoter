@@ -2,7 +2,7 @@ if((typeof(allowvoting) !== 'undefined') && allowvoting) {
   var votes = null;
   var votesused = 0;
   var flashing = false;
-  var floaterorigcolour = $.Color($('#uservotefloater'),'background-color');
+  var floaterorigcolour = $.Color($('#uservotefloaterinner'),'background-color');
 
   $.get("/votes").done(function(data) {
     votes = data;
@@ -73,7 +73,7 @@ if((typeof(allowvoting) !== 'undefined') && allowvoting) {
     if(flashing)
       return;
     flashing = true;
-    var floater = $('#uservotefloater');
+    var floater = $('#uservotefloaterinner');
     floater.animate({backgroundColor: '#ff2e80'}, 100).animate({backgroundColor: floaterorigcolour}, 200);
     flashing = false;
   }
@@ -81,7 +81,7 @@ if((typeof(allowvoting) !== 'undefined') && allowvoting) {
   function updatevotefloater(votesused) {
     if(allowvoting) {
       var summary = (votesused == allocation ? "all" : votesused) + " of your " + allocation + " " + currency;
-      $('#uservotefloater').html("You have spent " + summary + "<br/>You can use up to " + maxspend + " " + currency + " per hack");
+      $('#uservotefloaterinner').html("You have spent " + summary + "<br/>You can use up to " + maxspend + " " + currency + " per hack");
       $('#uservotefloater').show();
     }
   }

@@ -45,7 +45,7 @@
 														(str "function stagechanged() {"
 													  								"$.ajax({ url: '/admin/" (env :admin-key) "/stage/' + $('#adminvotingstage').val(),"
 													  								"type: 'PUT'});}")])
-													(when allowvoting [:div {:id "uservotefloater"} "floating vote thing"])
+													(when allowvoting [:div {:id "uservotefloater"} [:div {:id "uservotefloaterinner"}]])
 													(when (not showvotes) [:div (get-inline-link "/hacks/new" "Add new hack")])]])
 				(if (> (count hacks) 0)
 					(hiccup/html	[:div  {:class "section"}
@@ -101,7 +101,7 @@
 																[:div [:label {:for "creator" :accesskey "c"} "<u>C</u>reator:"] [:input {:type "text" :name "creator" :id "creator" :value (value-or-string (:creator hack))}]]
 																[:div [:label  "Image:"] [:img {:id "editpreview" :src (:imgurl hack)}] (when (str/blank? (:imgurl hack)) [:p {:id "noimg"} "No image uploaded yet"])]
 																[:div [:input {:type "hidden" :name "imgurl" :id "imgurl" :value (:imgurl hack)}]
-																			[:input {:type "filepicker" :data-fp-apikey (env :filepickerio-key) :onchange "newimageuploaded(event.fpfile.url)"}]]
+																			[:input {:type "filepicker" :data-fp-apikey (env :filepicker-key) :onchange "newimageuploaded(event.fpfile.url)"}]]
 																[:input {:type "submit" :value "Save"}]
 																(when (not (nil? msg)) [:div {:class "message"} msg])
 															]]))))

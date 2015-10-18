@@ -2,7 +2,7 @@
 html {
   font-size: 16px;
   font-family: sans-serif;
-  background-color: #000000;
+  background-color: #2c2e4a;
   color: #ffffff; }
 
 /* Fonts */
@@ -24,7 +24,7 @@ html {
 
 .clear { clear: both; }
 
-.title { color: #FF2E80;}
+.title { color: #de422e;}
 
 input { font-family: Menlo, Monaco, Consolas, 'Courier New', monospace; }
 textarea { width:100%;
@@ -40,7 +40,7 @@ textarea { width:100%;
   position: absolute;
   top: 0;
   bottom: 0;
-  padding: 10% 0; }
+  padding: 70px 0; }
 
 .container-inner {
   display: table-cell;
@@ -88,7 +88,7 @@ input {
 .box {
   text-align: left;
   clear:both;
-  background-color: #444;
+  background-color: #111;
   overflow-y: hidden;
   padding: 10px;
   margin: 0 0 20px 0;
@@ -98,7 +98,15 @@ input {
 }
 
 .winner {
-  background-color: #2c2e4a;
+  background-color: #de422e;
+}
+
+div .winner h1 {
+  color: #fff;
+}
+
+.winner a {
+  color: #333;
 }
 
 .section {
@@ -106,7 +114,7 @@ input {
 }
 
 .box h1 {
-  color: #ff2e80;
+  color: #de422e;
   text-transform: uppercase;
   font-size: 24px;
   font-family: sans-serif;
@@ -162,8 +170,10 @@ input {
 #uservotefloater {
   position: fixed;
   top: 5px;
-  margin: 0 auto;
-  background-color: #2c2e4a;
+  left: 2%;
+  margin: 0;
+  width: 96%;
+  background-color: #de422e;
   padding: 10px;
   border-radius: 3px;
   line-height: 1.5rem;
@@ -189,14 +199,14 @@ input {
 .votebtn {
   width:33%;
   height:100%;
-  background: #FF2E80;
+  background: #de422e;
   font-size: 1.2em;
   font-weight: 600;
   border:1px #444 solid;
 }
 
 .votebtn:hover {
-  background: #CC2266;
+  background: #a72b1b;
 }
 
 .votebtnup {
@@ -208,8 +218,8 @@ input {
 }
 
 .votebtn[disabled] {
-  background-color: #8f0039;
-  border: 1px solid #8f0039;
+  background-color: #6a1b11;
+  border: 1px solid #6a1b11;
 }
 
 .uservote {
@@ -226,7 +236,7 @@ input {
 
 form {
   border: 1px #CC2266 solid;
-  background-color: #2c2e4a;
+  background-color: #000000;
   padding: 30px;
   font-size: 24px;
 }
@@ -249,7 +259,7 @@ input[type='text'] {
 
 input[type='submit'] {
   font-size: 20px;
-  background-color: #ff2e80;
+  background-color: #de422e;
   color: white;
 }
 
@@ -261,11 +271,11 @@ img#editpreview {
 
 .message {
   margin-top: 24px;
-  color: #ff2e80;
+  color: #de422e;
 }
 
 .adminstage {
-  background-color: #2c2e4a;
+  background-color: #000000;
   border-radius: 4px;
   padding-left: 6px;
   width: 96%;
@@ -296,10 +306,5 @@ img#editpreview {
   }
   .box .vote {
     font-size: 28px;
-  }
-}
-
-@media only screen and (min-width: 1025px) {
-  .box {
   }
 }
