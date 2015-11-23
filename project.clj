@@ -1,5 +1,5 @@
 (defproject voter "1.0.0-SNAPSHOT"
-  :description "Voter service"
+  :description "Hack Voter"
 
   :dependencies [[ch.qos.logback/logback-classic "1.1.3"]
                  [cheshire "5.4.0"]
@@ -88,8 +88,8 @@
                              [lein-midje "3.1.3"]
                              [lein-rpm "0.0.5"]]}}
   
-  :rpm {:name "voter"
-        :summary "RPM for Voter service"
+  :rpm {:name "hackvoter"
+        :summary "RPM for Hack Voter"
         :copyright "MixRadio 2015"
         :preinstall {:scriptFile "scripts/rpm/preinstall.sh"}
         :postinstall {:scriptFile "scripts/rpm/postinstall.sh"}
