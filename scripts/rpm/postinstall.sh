@@ -1,6 +1,6 @@
 /bin/echo "postinstall script started [$1]"
 
-APP_NAME=voter
+APP_NAME=hackvoter
 
 if [ "$1" -le 1 ]
 then
