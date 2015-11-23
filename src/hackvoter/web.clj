@@ -69,6 +69,8 @@
   (GET "/healthcheck"
        [] (healthcheck))
 
+  (GET "/ping" [] "pong")
+
   (GET "/"
     {:keys [headers params] :as request}
     (get-hack-list headers params false))
