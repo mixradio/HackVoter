@@ -1,4 +1,4 @@
-(defproject voter "1.0.1-SNAPSHOT"
+(defproject voter "1.0.1"
   :description "Voter service"
 
   :dependencies [[ch.qos.logback/logback-classic "1.1.3"]
