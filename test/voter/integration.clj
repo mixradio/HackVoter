@@ -1,5 +1,5 @@
-(ns voter.integration
-  (:require [voter.test-common :refer :all]
+(ns hackvoter.integration
+  (:require [hackvoter.test-common :refer :all]
             [clj-http.client :as http]
             [environ.core :refer [env]]
             [midje.sweet :refer :all]))

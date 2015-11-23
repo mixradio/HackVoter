@@ -1,5 +1,5 @@
-(defproject voter "1.0.3-SNAPSHOT"
-  :description "Hak Voter"
+(defproject hackvoter "1.0.3-SNAPSHOT"
+  :description "Hack Voter"
 
   :dependencies [[ch.qos.logback/logback-classic "1.1.3"]
                  [cheshire "5.4.0"]
@@ -42,7 +42,7 @@
         :requestlog-enabled "false"
         :requestlog-retainhours "24"
         :restdriver-port "8081"
-        :service-name "voter"
+        :service-name "hackvoter"
         :service-port "8080"
         :service-url "http://localhost:%s"
         :shutdown-timeout-millis "5000"
@@ -67,14 +67,14 @@
   :lein-release {:deploy-via :shell
                  :shell ["lein" "do" "clean," "uberjar," "pom," "rpm"]}
 
-  :ring {:handler voter.web/app
-         :main voter.setup
+  :ring {:handler hackvoter.web/app
+         :main hackvoter.setup
          :port ~(Integer/valueOf (get (System/getenv) "SERVICE_PORT" "8080"))
-         :init voter.setup/setup
+         :init hackvoter.setup/setup
          :browser-uri "/healthcheck"
          :nrepl {:start? true}}
 
-  :uberjar-name "voter.jar"
+  :uberjar-name "hackvoter.jar"
   
   :profiles {:dev {:dependencies [[com.github.rest-driver/rest-client-driver "1.1.42"
                                    :exclusions [org.slf4j/slf4j-nop
@@ -96,22 +96,22 @@
         :preremove {:scriptFile "scripts/rpm/preremove.sh"}
         :postremove {:scriptFile "scripts/rpm/postremove.sh"}
         :requires ["jdk >= 2000:1.7.0_55-fcs"]
-        :mappings [{:directory "/usr/local/voter"
+        :mappings [{:directory "/usr/local/hackvoter"
                     :filemode "444"
-                    :username "voter"
-                    :groupname "voter"
-                    :sources {:source [{:location "target/voter.jar"}]}}
-                   {:directory "/usr/local/voter/bin"
+                    :username "hackvoter"
+                    :groupname "hackvoter"
+                    :sources {:source [{:location "target/hackvoter.jar"}]}}
+                   {:directory "/usr/local/hackvoter/bin"
                     :filemode "744"
-                    :username "voter"
-                    :groupname "voter"
+                    :username "hackvoter"
+                    :groupname "hackvoter"
                     :sources {:source [{:location "scripts/bin"}]}}
                    {:directory "/etc/rc.d/init.d"
                     :filemode "755"
-                    :sources {:source [{:location "scripts/service/voter"
-                                        :destination "voter"}]}}]}
+                    :sources {:source [{:location "scripts/service/hackvoter"
+                                        :destination "hackvoter"}]}}]}
 
 
-  :aot [voter.setup]
+  :aot [hackvoter.setup]
 
-  :main voter.setup)
+  :main hackvoter.setup)

@@ -1,4 +1,4 @@
-(ns voter.test-common
+(ns hackvoter.test-common
   (:require [cheshire.core :as json]
             [clojure.string :as str]
             [environ.core :refer [env]]))

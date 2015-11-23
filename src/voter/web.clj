@@ -1,4 +1,4 @@
-(ns voter.web
+(ns hackvoter.web
   (:require [compojure
              [core :refer [defroutes GET POST PUT DELETE]]
              [route :as route]]
@@ -11,8 +11,8 @@
              [ignore-trailing-slash :refer [wrap-ignore-trailing-slash]]
              [reload :refer [wrap-reload]]
              [setup :as setup]]
-            [voter.data :as data]
-            [voter.html :as html]
+            [hackvoter.data :as data]
+            [hackvoter.html :as html]
             [clojure.string :as str]
             [clj-time.core :as time]
             [clj-time.format :refer [formatters unparse]]
@@ -23,11 +23,11 @@
             [ring.util.response :refer [resource-response]]))
 
 (def version
-  (setup/version "voter"))
+  (setup/version "hackvoter"))
 
 (defn- healthcheck
   []
-  (let [body {:name "voter"
+  (let [body {:name "hackvoter"
               :version version
               :success true
               :dependencies []}]

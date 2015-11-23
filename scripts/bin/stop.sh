@@ -1,6 +1,6 @@
 #!/bin/sh
 
-PIDS=$(pgrep java -lf | grep voter | cut -d" " -f1);
+PIDS=$(pgrep java -lf | grep hackvoter | cut -d" " -f1);
 
 if [ -n "$PIDS" ]
 then

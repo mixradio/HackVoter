@@ -1,12 +1,12 @@
 #!/bin/sh
 
-APP_NAME=voter
+APP_NAME=hackvoter
 
 PIDS=$(pgrep java -lf | grep $APP_NAME | cut -d" " -f1);
 
 if [ -n "$PIDS" ]
 then
-  echo "Voter is already running in process $PIDS";
+  echo "Hack Voter is already running in process $PIDS";
   exit 1
 fi
 
@@ -32,8 +32,8 @@ SERVICE_PORT=${SERVICE_PORT:-"8080"}
 HEALTHCHECK_PATH=${HEALTHCHECK_PATH:-"/healthcheck"}
 START_TIMEOUT_SECONDS=${START_TIMEOUT_SECONDS:-"60"}
 LOGGING_PATH=${LOGGING_PATH:-"/var/log/${SERVICE_NAME}"}
-LOG_FILE=${LOGGING_PATH}/voter.out
-ERR_FILE=${LOGGING_PATH}/voter.err
+LOG_FILE=${LOGGING_PATH}/hackvoter.out
+ERR_FILE=${LOGGING_PATH}/hackvoter.err
 
 mkdir -p /var/encrypted/logs/${APP_NAME}
 
@@ -44,7 +44,7 @@ waitTimeout=$START_TIMEOUT_SECONDS
 sleepCounter=0
 sleepIncrement=2
 
-echo "Giving Voter $waitTimeout seconds to start successfully"
+echo "Giving Hack Voter $waitTimeout seconds to start successfully"
 echo "Using $statusUrl to determine service status"
 
 retVal=0
@@ -53,7 +53,7 @@ until [ `curl --write-out %{http_code} --silent --output /dev/null $statusUrl` -
 do
   if [ $sleepCounter -ge $waitTimeout ]
   then
-    echo "Voter didn't start within $waitTimeout seconds."
+    echo "Hack Voter didn't start within $waitTimeout seconds."
     PIDS=$(pgrep java -lf | grep $APP_NAME | cut -d" " -f1);
     if [ -n "$PIDS" ]
 	then
@@ -80,9 +80,9 @@ cat $ERR_FILE 1>&2
 
 if [ $retVal -eq 1 ]
 then
-  echo "Starting Voter failed"
+  echo "Starting Hack Voter failed"
 else
-  echo "Starting Voter succeeded"
+  echo "Starting Hack Voter succeeded"
 fi
 
 exit $retVal

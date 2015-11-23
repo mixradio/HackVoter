@@ -1,4 +1,4 @@
-(ns voter.html
+(ns hackvoter.html
   (:require [clojure.java.io :as io]
   					[clojure.string :as str]
   					[clojure.string :refer [blank?]]

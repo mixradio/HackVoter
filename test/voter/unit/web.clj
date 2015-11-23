@@ -1,5 +1,5 @@
-(ns voter.unit.web
-  (:require [voter.web :refer :all]
+(ns hackvoter.unit.web
+  (:require [hackvoter.web :refer :all]
             [cheshire.core :as json]
             [midje.sweet :refer :all])
   (:import [java.io ByteArrayInputStream InputStream]))
@@ -38,4 +38,4 @@
  (fact "Healthcheck returns OK"
        (let [resp (request :get "/healthcheck")]
          (:status resp) => 200
-         (get-in resp [:body :name]) => "voter")))
+         (get-in resp [:body :name]) => "hackvoter")))

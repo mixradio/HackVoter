@@ -1,5 +1,5 @@
-(ns voter.setup
-    (:require [voter.web :as web]
+(ns hackvoter.setup
+    (:require [hackvoter.web :as web]
               [clojure.string :as str]
               [environ.core :refer [env]]
               [metrics.core :refer [default-registry]]

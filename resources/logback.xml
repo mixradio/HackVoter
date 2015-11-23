@@ -12,9 +12,9 @@
     <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
       <level>${LOGGING_FILETHRESHOLD:-info}</level>
     </filter>
-    <file>${LOGGING_PATH:-/tmp}/${SERVICE_NAME:-voter}.log</file>
+    <file>${LOGGING_PATH:-/tmp}/${SERVICE_NAME:-hackvoter}.log</file>
     <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-      <fileNamePattern>${LOGGING_PATH:-/tmp}/${SERVICE_NAME:-voter}.%d{yyyy-MM-dd}.log.zip</fileNamePattern>
+      <fileNamePattern>${LOGGING_PATH:-/tmp}/${SERVICE_NAME:-hackvoter}.%d{yyyy-MM-dd}.log.zip</fileNamePattern>
       <maxHistory>28</maxHistory>
     </rollingPolicy>
     <encoder>
@@ -36,9 +36,9 @@
       <level>${LOGGING_STASHTHRESHOLD:-warn}</level>
     </filter>
     <filter class="mixradio.metrics.GraphiteReporterFilter" />
-    <file>${LOGGING_PATH:-/tmp}/${SERVICE_NAME:-voter}-stash.log</file>
+    <file>${LOGGING_PATH:-/tmp}/${SERVICE_NAME:-hackvoter}-stash.log</file>
     <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-      <fileNamePattern>${LOGGING_PATH:-/tmp}/${SERVICE_NAME:-voter}-stash.%d{yyyy-MM-dd}.%i.log.zip</fileNamePattern>
+      <fileNamePattern>${LOGGING_PATH:-/tmp}/${SERVICE_NAME:-hackvoter}-stash.%d{yyyy-MM-dd}.%i.log.zip</fileNamePattern>
       <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
         <maxFileSize>50MB</maxFileSize>
       </timeBasedFileNamingAndTriggeringPolicy>

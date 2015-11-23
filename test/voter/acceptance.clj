@@ -1,5 +1,5 @@
-(ns voter.acceptance
-  (:require [voter.test-common :refer :all]
+(ns hackvoter.acceptance
+  (:require [hackvoter.test-common :refer :all]
             [clj-http.client :as http]
             [environ.core :refer [env]]
             [midje.sweet :refer :all]))
@@ -15,6 +15,6 @@
        (let [response (http/get (url+ "/healthcheck") {:throw-exceptions false})
              body (json-body response)]
          response => (contains {:status 200})
-         body => (contains {:name "voter"
+         body => (contains {:name "hackvoter"
                             :success true
                             :version truthy}))))

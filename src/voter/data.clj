@@ -1,4 +1,4 @@
-(ns voter.data
+(ns hackvoter.data
   (:require [cheshire.core :as json]
             [clj-http.client :as http]
             [clojure.string :refer [blank?]]
