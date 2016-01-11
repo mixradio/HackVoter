@@ -203,6 +203,7 @@ div .winner h1 {
   font-size: 1.2em;
   font-weight: 600;
   border:1px #444 solid;
+  padding:0;
 }
 
 .votebtn:hover {
