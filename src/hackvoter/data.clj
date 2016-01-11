@@ -115,13 +115,15 @@
 
 (defn store-vote [userid publicid votes]
 	; validate the allocation in case some smart-ass uses jquery to post bad votes :)
-  (warn (str "store-vote userid=" userid " publicid=" publicid " votes=" votes))
+  (warn (str "store-vote userid=" userid " publicid=" publicid " votes=" votes " "))
 	(try
     (let [config (get-config-items)
   				allowvoting (:allowvoting config)
   				allocation (:allocation config)
   				maxspend (:maxspend config)
-  				existingvotes (get-user-votes userid)
+  				existingvotes (get-user-votes userid)]
+          (warn (str "store-vote " allowvoting " " allocation " " maxspend " " existingvotes))
+          (let[
   				uservotesincludingthis (+ votes (reduce + (map (fn[x] (if (zero? (compare publicid (:id x))) 0 (:uservotes x))) existingvotes)))
   				votewithinbudget (and (<= votes maxspend) (<= uservotesincludingthis allocation))
   				oktostore (and allowvoting votewithinbudget)]
@@ -135,6 +137,7 @@
   																		 				 :lastupdate (str (time/now))}))
   		(when-not oktostore
   			(prn "store-vote validation failed")))
+          )
     (catch Exception e (error (.printStackTrace e)))))
 
 ; primary access by publicid
