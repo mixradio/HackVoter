@@ -1,4 +1,4 @@
-(defproject hackvoter "1.0.8"
+(defproject hackvoter "1.0.9-SNAPSHOT"
   :description "Hack Voter"
 
   :dependencies [[ch.qos.logback/logback-classic "1.1.3"]
