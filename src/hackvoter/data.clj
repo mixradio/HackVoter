@@ -51,7 +51,7 @@
 		(map (fn[hack] 
 			(let [id (:publicid hack)
 						vote (:votes (first (filter (fn[x] (zero? (compare id (:publicid x)))) uservotes)))]
-				{:id id :uservotes (if (nil? vote) 0 vote)})) allhacks)))
+				{:id id :uservotes (if (nil? vote) 0N vote)})) allhacks)))
 
 (defn get-config-items []
 	(let [stage @votingstage]
@@ -123,7 +123,14 @@
   				existingvotes (get-user-votes userid)]
           (warn (str "store-vote " allowvoting " " allocation " " maxspend " " (apply str existingvotes)))
           (let[
-  				uservotesincludingthis (+ votes (reduce + (map (fn[x] (if (zero? (compare publicid (:id x))) 0 (:uservotes x))) existingvotes)))
+  				uservotesincludingthis (+ votes 
+            (reduce + 
+              (map 
+                (fn[x] 
+                  (if (zero? (compare publicid (:id x)))
+                    0
+                    (:uservotes x)))
+                existingvotes)))
   				votewithinbudget (and (<= votes maxspend) (<= uservotesincludingthis allocation))
   				oktostore (and allowvoting votewithinbudget)]
   		(warn (str "votewithinbudget=" votewithinbudget " uservotesincludingthis=" uservotesincludingthis))
