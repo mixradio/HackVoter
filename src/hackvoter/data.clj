@@ -35,15 +35,15 @@
     (far/query client-opts table query)
     (catch Exception _ nil)))
 
-(defn- ensure-hacks-table []
+(defn ensure-hacks-table []
 	(far/ensure-table client-opts hack-table [:publicid :s]
   	 {:range-keydef [:editorid :s]
-  	 	:throughput {:read (env :readalloc-hack) :write (env :writealloc-hack)} :block? true }))
+  	 	:throughput {:read 2 :write 2} :block? true }))
 
-(defn- ensure-votes-table []
+(defn ensure-votes-table []
 	(far/ensure-table client-opts votes-table [:publicid :s]
   	 {:range-keydef [:userid :s]
-  	 	:throughput {:read (env :readalloc-vote) :write (env :writealloc-vote)} :block? true }))
+  	 	:throughput {:read 2 :write 2} :block? true }))
 
 (defn get-user-votes [userid]
 	(let [allhacks (far/scan client-opts hack-table)
@@ -53,15 +53,18 @@
 						vote (:votes (first (filter (fn[x] (zero? (compare id (:publicid x)))) uservotes)))]
 				{:id id :uservotes (if (nil? vote) 0N vote)})) allhacks)))
 
+(defn- parse-int [s]
+  (Integer. (re-find #"\d+" s)))
+
 (defn get-config-items []
 	(let [stage @votingstage]
 		{	:currency (env :currency)
-			:allocation (env :allocation)
-			:maxspend (env :max-spend)
+			:allocation (parse-int (env :allocation))
+			:maxspend (parse-int (env :max-spend))
 			:votingstage stage
 			:configuredvotingstage (keyword (env :voting-stage))
-			:allowvoting (== (compare :votingallowed stage) 0)
-			:showvotes (== (compare :completed stage) 0) }))
+			:allowvoting (zero? (compare :votingallowed stage))
+			:showvotes (zero? (compare :completed stage))}))
 
 (defn update-voting-stage [newstage]
 	(let [keystage (keyword newstage)]
@@ -103,7 +106,6 @@
 				description (:description hack)
 				creator (:creator hack)
 				imgurl (:imgurl hack)]
-		(ensure-hacks-table)
 		(prn (str "store-hack editorid=" editorid " publicid=" publicid " title=" title " description=" description " creator=" creator " imgurl=" imgurl))
 		(far/put-item client-opts hack-table {:publicid publicid
 																	 				:editorid editorid
@@ -115,28 +117,23 @@
 
 (defn store-vote [userid publicid votes]
 	; validate the allocation in case some smart-ass uses jquery to post bad votes :)
-  (warn (str "store-vote userid=" userid " publicid=" publicid " votes=" votes " " (class votes)))
+  (warn (str "store-vote userid=" userid " publicid=" publicid " votes=" votes))
 	  (let [config (get-config-items)
   				allowvoting (:allowvoting config)
   				allocation (:allocation config)
   				maxspend (:maxspend config)
   				existingvotes (get-user-votes userid)
-          uservotesincludingthis (+ votes (reduce + (map (fn[x] (if (zero? (compare publicid (:id x))) 0 (:uservotes x))) existingvotes)))]
-          (warn (str "store-vote " allowvoting " " allocation " " maxspend " " (apply str existingvotes) " " uservotesincludingthis " " (class uservotesincludingthis) " " maxspend " " (class maxspend) " " allocation " " (class allocation)))
-          (let[
-    				votewithinbudget (and (<= votes maxspend) (<= uservotesincludingthis allocation))
-    				oktostore (and allowvoting votewithinbudget)]
+          uservotesincludingthis (+ votes (reduce + (map (fn[x] (if (zero? (compare publicid (:id x))) 0 (:uservotes x))) existingvotes)))
+  				votewithinbudget (and (<= votes maxspend) (<= uservotesincludingthis allocation))
+  				oktostore (and allowvoting votewithinbudget)]
   		(warn (str "votewithinbudget=" votewithinbudget " uservotesincludingthis=" uservotesincludingthis))
   		(when oktostore
-  			(prn (str "store-vote userid=" userid " publicid=" publicid " votes=" votes))
-  			(ensure-votes-table)
   			(far/put-item client-opts votes-table {:userid userid
   																						 :publicid publicid
   																						 :votes votes
   																		 				 :lastupdate (str (time/now))}))
   		(when-not oktostore
-  			(prn "store-vote validation failed")))
-          ))
+  			(prn "store-vote validation failed"))))
 
 ; primary access by publicid
 (defn get-hack-by-publicid [publicid]

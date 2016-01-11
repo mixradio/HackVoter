@@ -56,13 +56,10 @@
         :hacks-table "hackvoter-hacks"
         :hack-votes-table "hackvoter-votes"
         :currency "hack pounds"
-        :allocation 5
-        :max-spend 3
+        :allocation "5"
+        :max-spend "3"
         :voting-stage "votingallowed" ; one of submission | votingallowed | completed 
-        :readalloc-hack 5
-        :writealloc-hack 3
-        :readalloc-vote 5
-        :writealloc-vote 5 }
+        }
   
   :lein-release {:deploy-via :shell
                  :shell ["lein" "do" "clean," "uberjar," "pom," "rpm"]}

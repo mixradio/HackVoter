@@ -1,7 +1,9 @@
 (ns hackvoter.setup
-    (:require [hackvoter.web :as web]
-              [clojure.string :as str]
+    (:require [clojure.string :as str]
               [environ.core :refer [env]]
+              [hackvoter
+                [web :as web]
+                [data :as data]]
               [metrics.core :refer [default-registry]]
               [mixradio.instrumented-jetty :refer [run-jetty]]
               [radix.setup :as setup])
@@ -46,6 +48,8 @@
   (setup/configure-logging)
   (configure-graphite-appender)
   (setup/start-graphite-reporting {:graphite-prefix (str/join "." [(env :environment-name) (env :service-name) (env :box-id setup/hostname)])})
+  (data/ensure-hacks-table)
+  (data/ensure-votes-table)
   (reset! server (start-server)))
 
 (defn stop
