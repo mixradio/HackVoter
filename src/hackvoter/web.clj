@@ -43,13 +43,13 @@
 
 (defn- get-userid [headers]
   (let [cookie (get headers "cookie")
-        crumbs (when (not (nil? cookie)) (str/split cookie #"userid="))
-        userid (when (> (count crumbs) 0) (last crumbs))]
+        crumbs (when-not (nil? cookie) (str/split cookie #"userid="))
+        userid (when (pos? (count crumbs)) (last crumbs))]
     (prn (str "get-userid " cookie " -> " userid))
-    (if (not (nil? userid)) userid (new-uuid))))
+    (if-not (nil? userid) userid (new-uuid))))
 
 (defn- check-admin-auth [adminkey]
-  (== 0 (compare adminkey (env :admin-key))))
+  (zero? (compare adminkey (env :admin-key))))
 
 (defn- get-hack-list [headers params adminview]
     (let [isjson (wants-json headers)

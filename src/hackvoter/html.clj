@@ -38,16 +38,16 @@
 																											[:div [:span "Active stage:"]
 																													[:select
 																														{:id "adminvotingstage" :onchange "stagechanged()"}
-																														[:option (when (== (compare :submission stage) 0) {:selected "true"}) "submission"]
-																														[:option (when (== (compare :votingallowed stage) 0) {:selected "true"}) "votingallowed"]
-																														[:option (when (== (compare :completed stage) 0) {:selected "true"}) "completed"]]]])
+																														[:option (when (zero? (compare :submission stage)) {:selected "true"}) "submission"]
+																														[:option (when (zero? (compare :votingallowed stage)) {:selected "true"}) "votingallowed"]
+																														[:option (when (zero? (compare :completed stage)) {:selected "true"}) "completed"]]]])
 													(when adminview [:script {:type "text/javascript"}
 														(str "function stagechanged() {"
 													  								"$.ajax({ url: '/admin/" (env :admin-key) "/stage/' + $('#adminvotingstage').val(),"
 													  								"type: 'PUT'});}")])
 													(when allowvoting [:div {:id "uservotefloater"} [:div {:id "uservotefloaterinner"}]])
-													(when (not showvotes) [:div (get-inline-link "/hacks/new" "Add new hack")])]])
-				(if (> (count hacks) 0)
+													(when-not showvotes [:div (get-inline-link "/hacks/new" "Add new hack")])]])
+				(if (pos? (count hacks))
 					(hiccup/html	[:div  {:class "section"}
 													[:div
 														(map (fn [hack]
@@ -87,7 +87,7 @@
 							(str formatted-hacks formatted-config))))
 
 (defn- value-or-string [value]
-	(if (not (nil? value)) value ""))
+	(if-not (nil? value) value ""))
 
 (defn get-edit-page [hack msg]
 	(let [isnew (nil? (:publicid hack))]
@@ -103,7 +103,7 @@
 																[:div [:input {:type "hidden" :name "imgurl" :id "imgurl" :value (:imgurl hack)}]
 																			[:input {:type "filepicker" :data-fp-apikey (env :filepicker-key) :onchange "newimageuploaded(event.fpfile.url)"}]]
 																[:input {:type "submit" :value "Save"}]
-																(when (not (nil? msg)) [:div {:class "message"} msg])
+																(when-not (nil? msg) [:div {:class "message"} msg])
 															]]))))
 
 (defn get-not-authorised []
