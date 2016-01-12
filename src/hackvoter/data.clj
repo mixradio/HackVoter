@@ -93,8 +93,8 @@
 				allowvoting (:allowvoting config)
 				showvotes (or adminview (:showvotes config))
 				votes (sum-all-votes)]
-		(prn (str "list-hacks allowvoting=" allowvoting " showvotes=" showvotes " adminview=" adminview))
-		(prn votes)
+		;(prn (str "list-hacks allowvoting=" allowvoting " showvotes=" showvotes " adminview=" adminview))
+		;(prn votes)
 		(if (and showvotes (not (nil? votes)))
 			(sort-by :votes > (map (fn [hack] (let [numvotes ((keyword (:publicid hack)) votes)] (assoc hack :votes (if (nil? numvotes) 0 numvotes)))) hacks))
 			(sort-by :title hacks))))
@@ -106,7 +106,7 @@
 				description (:description hack)
 				creator (:creator hack)
 				imgurl (:imgurl hack)]
-		(prn (str "store-hack editorid=" editorid " publicid=" publicid " title=" title " description=" description " creator=" creator " imgurl=" imgurl))
+		(warn (str "store-hack editorid=" editorid " publicid=" publicid " title=" title " description=" description " creator=" creator " imgurl=" imgurl))
 		(far/put-item client-opts hack-table {:publicid publicid
 																	 				:editorid editorid
 																	 				:title title
@@ -126,14 +126,11 @@
           uservotesincludingthis (+ votes (reduce + (map (fn[x] (if (zero? (compare publicid (:id x))) 0 (:uservotes x))) existingvotes)))
   				votewithinbudget (and (<= votes maxspend) (<= uservotesincludingthis allocation))
   				oktostore (and allowvoting votewithinbudget)]
-  		(warn (str "votewithinbudget=" votewithinbudget " uservotesincludingthis=" uservotesincludingthis))
   		(when oktostore
   			(far/put-item client-opts votes-table {:userid userid
   																						 :publicid publicid
   																						 :votes votes
-  																		 				 :lastupdate (str (time/now))}))
-  		(when-not oktostore
-  			(prn "store-vote validation failed"))))
+  																		 				 :lastupdate (str (time/now))}))))
 
 ; primary access by publicid
 (defn get-hack-by-publicid [publicid]
@@ -145,7 +142,7 @@
 (defn- delete-vote [publicidtogo vote]
 	(let [publicid (:publicid vote)
 				userid (:userid vote)]
-		(prn (str "delete-vote " publicid " " userid))
+		;(prn (str "delete-vote " publicid " " userid))
 		(when (zero? (compare publicidtogo publicid))
 			(far/delete-item client-opts votes-table {:publicid publicid :userid userid})))
 	publicidtogo)

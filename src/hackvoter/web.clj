@@ -41,12 +41,14 @@
 (defn- wants-json [headers]
   (> (.indexOf (get headers "accept") "application/json") -1))
 
-(defn- get-userid [headers]
-  (let [cookie (get headers "cookie")
-        crumbs (when-not (nil? cookie) (str/split cookie #"userid="))
-        userid (when (pos? (count crumbs)) (last crumbs))]
+(defn get-userid [cookie]
+  (let [crumbs (when-not (nil? cookie) (str/split cookie #"userid="))
+        userid (when (> (count crumbs) 1) (last crumbs))]
     (prn (str "get-userid " cookie " -> " userid))
     (if-not (nil? userid) userid (new-uuid))))
+
+(defn- get-userid-from-headers [headers]
+  (get-userid (get headers "cookie")))
 
 (defn- check-admin-auth [adminkey]
   (zero? (compare adminkey (env :admin-key))))
@@ -54,7 +56,7 @@
 (defn- get-hack-list [headers params adminview]
     (let [isjson (wants-json headers)
           config (data/get-config-items)
-          userid (get-userid headers)
+          userid (get-userid-from-headers headers)
           hacks (data/list-hacks adminview)
           content-type (if isjson "application/json" "text/html")
           body (if isjson {:config config :items hacks} (html/format-hacks hacks config adminview))]
@@ -129,7 +131,7 @@
 
   (POST "/hacks/:publicid/votes"
     {:keys [headers params] :as request}
-    (let [userid (get-userid headers)
+    (let [userid (get-userid-from-headers headers)
           id (get params :publicid)
           strvotes (get params "votes")
           votes (Integer. (re-find  #"\d+" strvotes))
@@ -145,7 +147,7 @@
 
   (GET "/votes"
     {:keys [headers params] :as request}
-    (let [votes (data/get-user-votes (get-userid headers))]
+    (let [votes (data/get-user-votes (get-userid-from-headers headers))]
       {:headers {"content-type" "application/json"}
        :status 200
        :body votes}))
