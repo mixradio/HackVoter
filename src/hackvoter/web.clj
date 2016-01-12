@@ -44,9 +44,10 @@
 (defn get-userid [cookie]
   (let [crumbs (when-not (nil? cookie) (str/split cookie #"userid="))
         userid (when (> (count crumbs) 1) (last crumbs))
-        corrupt (if-not (nil? userid) (.indexOf userid "=") true)]
-    (prn (str "get-userid " cookie " -> " userid))
-    (if (or (nil? userid) corrupt) (new-uuid) userid)))
+        userid-clean (first (when-not (nil? userid) (str/split userid #";")))
+        corrupt (if-not (nil? userid-clean) (> (.indexOf userid-clean "=") -1) true)]
+    (prn (str "get-userid corrupt=" corrupt " " cookie " -> " userid-clean))
+    (if (or (nil? userid-clean) corrupt) (new-uuid) userid-clean)))
 
 (defn- get-userid-from-headers [headers]
   (get-userid (get headers "cookie")))
