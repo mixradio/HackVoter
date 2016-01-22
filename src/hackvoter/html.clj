@@ -46,7 +46,7 @@
 													  								"$.ajax({ url: '/admin/" (env :admin-key) "/stage/' + $('#adminvotingstage').val(),"
 													  								"type: 'PUT'});}")])
 													(when allowvoting [:div {:id "uservotefloater"} [:div {:id "uservotefloaterinner"}]])
-													(when-not showvotes [:div (get-inline-link "/hacks/new" "Add new hack")])]])
+													(when-not (or allowvoting showvotes) [:div (get-inline-link "/hacks/new" "Add new hack")])]])
 				(if (pos? (count hacks))
 					(hiccup/html	[:div  {:class "section"}
 													[:div
